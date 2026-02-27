@@ -1,0 +1,212 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ── Font Faces ──────────────────────────────────────────── */
+
+@font-face {
+  font-family: "Fraunces";
+  src: url("/assets/fonts/Fraunces.woff2") format("woff2");
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "General Sans";
+  src: url("/assets/fonts/GeneralSans.woff2") format("woff2");
+  font-weight: 200 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* ── Design Tokens ───────────────────────────────────────── */
+
+@layer base {
+  :root {
+    --radius: 0.75rem;
+
+    /* Core palette — warm editorial */
+    --background:       0.97 0.008 60;      /* warm parchment */
+    --foreground:       0.22 0.02  50;      /* rich espresso */
+
+    --card:             0.99 0.005 70;      /* off-white cream */
+    --card-foreground:  0.22 0.02  50;
+
+    --popover:          0.99 0.005 70;
+    --popover-foreground: 0.22 0.02 50;
+
+    /* Primary — deep terracotta */
+    --primary:          0.46 0.14  40;
+    --primary-foreground: 0.98 0.005 70;
+
+    /* Secondary — muted dusty rose */
+    --secondary:        0.93 0.02  50;
+    --secondary-foreground: 0.35 0.03 45;
+
+    --muted:            0.94 0.012 60;
+    --muted-foreground: 0.52 0.03  50;
+
+    /* Accent — warm terracotta glow */
+    --accent:           0.90 0.04  50;
+    --accent-foreground: 0.30 0.05  45;
+
+    --destructive:       0.577 0.245 27.325;
+    --destructive-foreground: 0.985 0 0;
+
+    --border:            0.88 0.02  55;
+    --input:             0.90 0.015 60;
+    --ring:              0.46 0.14  40;
+
+    /* Charts */
+    --chart-1: 0.646 0.222 41.116;
+    --chart-2: 0.6   0.118 184.704;
+    --chart-3: 0.398 0.07  227.392;
+    --chart-4: 0.828 0.189 84.429;
+    --chart-5: 0.769 0.188 70.08;
+
+    /* Sidebar */
+    --sidebar:                    0.97 0.008 60;
+    --sidebar-foreground:         0.22 0.02  50;
+    --sidebar-primary:            0.46 0.14  40;
+    --sidebar-primary-foreground: 0.98 0.005 70;
+    --sidebar-accent:             0.90 0.04  50;
+    --sidebar-accent-foreground:  0.30 0.05  45;
+    --sidebar-border:             0.88 0.02  55;
+    --sidebar-ring:               0.46 0.14  40;
+
+    /* Custom brand tokens */
+    --terracotta:    0.52 0.16  40;
+    --dusty-rose:    0.72 0.08  22;
+    --warm-cream:    0.97 0.008 60;
+    --espresso:      0.22 0.02  50;
+    --sage:          0.64 0.07 150;
+  }
+
+  * {
+    @apply border-border;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    font-family: "General Sans", sans-serif;
+  }
+}
+
+/* ── Utilities ───────────────────────────────────────────── */
+
+@layer utilities {
+  .text-terracotta {
+    color: oklch(var(--terracotta));
+  }
+  .bg-terracotta {
+    background-color: oklch(var(--terracotta));
+  }
+  .border-terracotta {
+    border-color: oklch(var(--terracotta));
+  }
+  .text-dusty-rose {
+    color: oklch(var(--dusty-rose));
+  }
+  .bg-dusty-rose {
+    background-color: oklch(var(--dusty-rose));
+  }
+  .text-sage {
+    color: oklch(var(--sage));
+  }
+
+  /* Noise texture overlay */
+  .noise-overlay::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  /* Gradient mesh background */
+  .gradient-mesh {
+    background:
+      radial-gradient(ellipse 80% 50% at 20% 30%, oklch(0.82 0.07 40 / 0.4), transparent),
+      radial-gradient(ellipse 60% 70% at 80% 70%, oklch(0.78 0.06 22 / 0.3), transparent),
+      radial-gradient(ellipse 50% 50% at 50% 50%, oklch(0.92 0.03 60 / 0.5), transparent),
+      oklch(var(--warm-cream));
+  }
+
+  .section-divider {
+    height: 1px;
+    background: linear-gradient(to right, transparent, oklch(var(--border)), transparent);
+  }
+
+  /* Letter spacing for headings */
+  .tracking-display {
+    letter-spacing: -0.035em;
+  }
+
+  /* Section eyebrow label — editorial line treatment */
+  .section-eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.625rem;
+    font-size: 0.6875rem;
+    font-weight: 600;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: oklch(var(--terracotta));
+  }
+  .section-eyebrow::before {
+    content: "";
+    display: block;
+    width: 1.75rem;
+    height: 1.5px;
+    background: oklch(var(--terracotta));
+    border-radius: 999px;
+    flex-shrink: 0;
+  }
+
+  /* Card inner highlight — gives glass/paper material feel */
+  .card-premium {
+    background: oklch(var(--card));
+    box-shadow:
+      0 0 0 1px oklch(0.88 0.02 55 / 0.7),
+      0 2px 4px oklch(0.22 0.02 50 / 0.04),
+      0 8px 24px -6px oklch(0.22 0.02 50 / 0.08),
+      inset 0 1px 0 oklch(1 0 0 / 0.6);
+    transition: box-shadow 0.3s ease, transform 0.3s ease;
+  }
+  .card-premium:hover {
+    box-shadow:
+      0 0 0 1px oklch(0.52 0.16 40 / 0.2),
+      0 4px 8px oklch(0.22 0.02 50 / 0.06),
+      0 16px 48px -8px oklch(0.46 0.14 40 / 0.16),
+      inset 0 1px 0 oklch(1 0 0 / 0.7);
+    transform: translateY(-3px);
+  }
+
+  /* Hero cinematic overlay — light at top, dark at bottom only */
+  .hero-overlay {
+    background:
+      linear-gradient(
+        to bottom,
+        oklch(0.97 0.008 60 / 0.15) 0%,
+        oklch(0.97 0.008 60 / 0.08) 30%,
+        oklch(0.97 0.008 60 / 0.25) 65%,
+        oklch(0.22 0.02 50 / 0.55) 100%
+      );
+  }
+
+  /* Grain texture for depth */
+  .grain::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='grain'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23grain)' opacity='0.03'/%3E%3C/svg%3E");
+    pointer-events: none;
+    mix-blend-mode: multiply;
+  }
+}
