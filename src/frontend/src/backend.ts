@@ -89,17 +89,58 @@ export class ExternalBlob {
         return this;
     }
 }
+export interface BlogPost {
+    id: bigint;
+    title: string;
+    content: string;
+    createdAt: bigint;
+    excerpt: string;
+    category: string;
+}
 export interface ContactMessage {
     name: string;
     email: string;
     message: string;
 }
 export interface backendInterface {
+    createPost(title: string, content: string, excerpt: string, category: string): Promise<bigint>;
+    deletePost(id: bigint): Promise<boolean>;
     getAllMessages(): Promise<Array<ContactMessage>>;
+    getAllPosts(): Promise<Array<BlogPost>>;
+    getPostById(id: bigint): Promise<BlogPost | null>;
     submitContactMessage(name: string, email: string, message: string): Promise<void>;
 }
+import type { BlogPost as _BlogPost } from "./declarations/backend.did.d.ts";
 export class Backend implements backendInterface {
     constructor(private actor: ActorSubclass<_SERVICE>, private _uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, private _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, private processError?: (error: unknown) => never){}
+    async createPost(arg0: string, arg1: string, arg2: string, arg3: string): Promise<bigint> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.createPost(arg0, arg1, arg2, arg3);
+                return result;
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.createPost(arg0, arg1, arg2, arg3);
+            return result;
+        }
+    }
+    async deletePost(arg0: bigint): Promise<boolean> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.deletePost(arg0);
+                return result;
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.deletePost(arg0);
+            return result;
+        }
+    }
     async getAllMessages(): Promise<Array<ContactMessage>> {
         if (this.processError) {
             try {
@@ -112,6 +153,34 @@ export class Backend implements backendInterface {
         } else {
             const result = await this.actor.getAllMessages();
             return result;
+        }
+    }
+    async getAllPosts(): Promise<Array<BlogPost>> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.getAllPosts();
+                return result;
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.getAllPosts();
+            return result;
+        }
+    }
+    async getPostById(arg0: bigint): Promise<BlogPost | null> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.getPostById(arg0);
+                return from_candid_opt_n1(this._uploadFile, this._downloadFile, result);
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.getPostById(arg0);
+            return from_candid_opt_n1(this._uploadFile, this._downloadFile, result);
         }
     }
     async submitContactMessage(arg0: string, arg1: string, arg2: string): Promise<void> {
@@ -128,6 +197,9 @@ export class Backend implements backendInterface {
             return result;
         }
     }
+}
+function from_candid_opt_n1(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: [] | [_BlogPost]): BlogPost | null {
+    return value.length === 0 ? null : value[0];
 }
 export interface CreateActorOptions {
     agent?: Agent;

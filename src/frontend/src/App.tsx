@@ -5,7 +5,9 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
-import { useSubmitContact } from "./hooks/useQueries";
+import { Badge } from "@/components/ui/badge";
+import { useSubmitContact, useGetAllPosts, useCreatePost, useDeletePost } from "./hooks/useQueries";
+import type { BlogPost } from "./backend.d";
 import {
   Megaphone,
   User,
@@ -18,6 +20,12 @@ import {
   X,
   ArrowRight,
   Loader2,
+  BookOpen,
+  ArrowLeft,
+  Trash2,
+  PenLine,
+  Plus,
+  ChevronRight,
 } from "lucide-react";
 
 /* ── Fade-in wrapper ─────────────────────────────────────── */
@@ -52,10 +60,15 @@ const NAV_LINKS = [
   { label: "What I Do", href: "#services" },
   { label: "Vision", href: "#vision" },
   { label: "Work", href: "#work" },
+  { label: "Blog", href: "#blog" },
   { label: "Contact", href: "#contact" },
 ];
 
-function Navbar() {
+interface NavbarProps {
+  onLogoClick: () => void;
+}
+
+function Navbar({ onLogoClick }: NavbarProps) {
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
 
@@ -81,13 +94,13 @@ function Navbar() {
         }`}
       >
         <div className="max-w-6xl mx-auto px-6 flex items-center justify-between h-16">
-          {/* Logo */}
+          {/* Logo — easter egg trigger */}
           <button
             type="button"
-            onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+            onClick={onLogoClick}
             className="font-display text-[1.4375rem] font-semibold tracking-[-0.04em] text-foreground hover:text-terracotta transition-colors"
           >
-            Jo.
+            Job JS.
           </button>
 
           {/* Desktop Nav */}
@@ -302,7 +315,7 @@ function About() {
             </FadeIn>
             <FadeIn delay={0.1}>
               <h2 className="font-display text-4xl md:text-[3.25rem] font-semibold tracking-display text-foreground mb-6 leading-[1.1]">
-                Hi, I'm Jo.
+                Hi, I'm Job JS.
               </h2>
             </FadeIn>
             <FadeIn delay={0.2}>
@@ -619,6 +632,503 @@ function Work() {
   );
 }
 
+/* ── Blog helpers ─────────────────────────────────────────── */
+function formatDate(nanoseconds: bigint): string {
+  const ms = Number(nanoseconds / 1_000_000n);
+  return new Date(ms).toLocaleDateString("en-US", {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+  });
+}
+
+/* ── Blog Post Card ───────────────────────────────────────── */
+function BlogCard({
+  post,
+  onRead,
+  isAdmin,
+  onDelete,
+}: {
+  post: BlogPost;
+  onRead: (post: BlogPost) => void;
+  isAdmin: boolean;
+  onDelete: (id: bigint) => void;
+}) {
+  const { isPending } = useDeletePost();
+
+  return (
+    <motion.div
+      layout
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -10 }}
+      className="group card-premium rounded-2xl p-8 overflow-hidden flex flex-col relative cursor-pointer"
+      onClick={() => onRead(post)}
+    >
+      {/* Gradient shimmer */}
+      <div className="absolute inset-0 bg-gradient-to-br from-transparent via-transparent to-terracotta/0 group-hover:to-terracotta/4 transition-all duration-500 pointer-events-none rounded-2xl" />
+      {/* Hover top accent */}
+      <div className="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-terracotta/0 via-terracotta/50 to-terracotta/0 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+
+      <div className="relative z-10 flex flex-col h-full gap-4">
+        {/* Category + date row */}
+        <div className="flex items-center justify-between gap-2">
+          <div className="flex items-center gap-2">
+            <span className="w-1.5 h-1.5 rounded-full bg-terracotta/60 shrink-0" />
+            <span className="text-[0.6875rem] font-semibold text-terracotta tracking-[0.12em] uppercase">
+              {post.category}
+            </span>
+          </div>
+          <span className="text-[0.6875rem] text-muted-foreground">
+            {formatDate(post.createdAt)}
+          </span>
+        </div>
+
+        <div className="flex-1">
+          <h3 className="font-display text-[1.4375rem] font-semibold text-foreground mb-2.5 leading-tight group-hover:text-terracotta transition-colors">
+            {post.title}
+          </h3>
+          <p className="text-muted-foreground leading-[1.7] text-sm line-clamp-3">
+            {post.excerpt}
+          </p>
+        </div>
+
+        <div className="pt-5 border-t border-border/60 flex items-center justify-between">
+          <span className="text-xs font-medium text-terracotta flex items-center gap-1.5 group-hover:gap-2.5 transition-all">
+            Read more
+            <ChevronRight size={13} />
+          </span>
+
+          {/* Admin delete button */}
+          {isAdmin && (
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                onDelete(post.id);
+              }}
+              disabled={isPending}
+              className="p-1.5 rounded-lg text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+              aria-label="Delete post"
+            >
+              {isPending ? (
+                <Loader2 size={14} className="animate-spin" />
+              ) : (
+                <Trash2 size={14} />
+              )}
+            </button>
+          )}
+        </div>
+      </div>
+    </motion.div>
+  );
+}
+
+/* ── Blog Detail ──────────────────────────────────────────── */
+function BlogDetail({
+  post,
+  onBack,
+}: {
+  post: BlogPost;
+  onBack: () => void;
+}) {
+  return (
+    <motion.div
+      key="detail"
+      initial={{ opacity: 0, y: 24 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -16 }}
+      transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
+      className="max-w-2xl mx-auto"
+    >
+      {/* Back button */}
+      <button
+        type="button"
+        onClick={onBack}
+        className="mb-8 inline-flex items-center gap-2 text-sm font-medium text-muted-foreground hover:text-terracotta transition-colors group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded-sm"
+      >
+        <ArrowLeft
+          size={15}
+          className="group-hover:-translate-x-0.5 transition-transform"
+        />
+        Back to Blog
+      </button>
+
+      {/* Article header */}
+      <header className="mb-10">
+        <div className="flex items-center gap-3 mb-5">
+          <Badge
+            variant="secondary"
+            className="bg-terracotta/10 text-terracotta border-0 text-[0.6875rem] tracking-[0.08em] uppercase font-semibold"
+          >
+            {post.category}
+          </Badge>
+          <span className="text-sm text-muted-foreground">
+            {formatDate(post.createdAt)}
+          </span>
+        </div>
+        <h1 className="font-display text-3xl md:text-[2.75rem] font-semibold tracking-display text-foreground leading-[1.1] mb-4">
+          {post.title}
+        </h1>
+        <p className="text-lg text-muted-foreground leading-relaxed italic border-l-2 border-terracotta/30 pl-4">
+          {post.excerpt}
+        </p>
+      </header>
+
+      {/* Divider */}
+      <div className="h-px bg-gradient-to-r from-terracotta/20 via-border to-transparent mb-10" />
+
+      {/* Article body */}
+      <article className="prose-blog">
+        {post.content.split("\n\n").filter(Boolean).map((paragraph) => (
+          <p
+            key={paragraph.slice(0, 40)}
+            className="text-[1.0625rem] text-foreground/85 leading-[1.85] mb-6 last:mb-0"
+          >
+            {paragraph}
+          </p>
+        ))}
+      </article>
+
+      {/* Footer nav */}
+      <div className="mt-14 pt-8 border-t border-border/60">
+        <button
+          type="button"
+          onClick={onBack}
+          className="inline-flex items-center gap-2 text-sm font-medium text-muted-foreground hover:text-terracotta transition-colors group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded-sm"
+        >
+          <ArrowLeft
+            size={15}
+            className="group-hover:-translate-x-0.5 transition-transform"
+          />
+          Back to all posts
+        </button>
+      </div>
+    </motion.div>
+  );
+}
+
+/* ── New Post Form ────────────────────────────────────────── */
+const BLOG_CATEGORIES = [
+  "Lifestyle",
+  "Digital Marketing",
+  "Creativity",
+  "Campaign Strategy",
+  "Personal Branding",
+  "Content",
+];
+
+function NewPostForm({ onClose }: { onClose: () => void }) {
+  const [title, setTitle] = useState("");
+  const [category, setCategory] = useState(BLOG_CATEGORIES[0]);
+  const [excerpt, setExcerpt] = useState("");
+  const [content, setContent] = useState("");
+  const { mutate, isPending } = useCreatePost();
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!title.trim() || !excerpt.trim() || !content.trim()) return;
+    mutate(
+      { title, content, excerpt, category },
+      {
+        onSuccess: () => {
+          onClose();
+        },
+      }
+    );
+  };
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, scale: 0.97 }}
+      animate={{ opacity: 1, scale: 1 }}
+      exit={{ opacity: 0, scale: 0.97 }}
+      transition={{ duration: 0.3 }}
+      className="card-premium rounded-2xl p-8 mb-10 relative"
+    >
+      {/* Decorative top gradient */}
+      <div className="absolute top-0 left-8 right-8 h-px bg-gradient-to-r from-transparent via-terracotta/40 to-transparent" />
+
+      <div className="flex items-center justify-between mb-7">
+        <div className="flex items-center gap-3">
+          <PenLine size={18} className="text-terracotta" />
+          <h3 className="font-display text-xl font-semibold text-foreground">
+            New Blog Post
+          </h3>
+        </div>
+        <button
+          type="button"
+          onClick={onClose}
+          className="p-1.5 rounded-lg text-muted-foreground hover:text-foreground hover:bg-accent transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+          aria-label="Close form"
+        >
+          <X size={18} />
+        </button>
+      </div>
+
+      <form onSubmit={handleSubmit} className="space-y-5">
+        <div className="grid sm:grid-cols-2 gap-5">
+          <div className="space-y-1.5">
+            <Label htmlFor="post-title" className="text-foreground font-medium text-sm">
+              Title
+            </Label>
+            <Input
+              id="post-title"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              placeholder="Your post title"
+              required
+              className="bg-background border-border focus:border-terracotta transition-colors h-11"
+            />
+          </div>
+
+          <div className="space-y-1.5">
+            <Label htmlFor="post-category" className="text-foreground font-medium text-sm">
+              Category
+            </Label>
+            <select
+              id="post-category"
+              value={category}
+              onChange={(e) => setCategory(e.target.value)}
+              className="w-full h-11 rounded-md border border-input bg-background px-3 text-sm text-foreground focus:border-terracotta focus:outline-none focus:ring-2 focus:ring-ring/30 transition-colors"
+            >
+              {BLOG_CATEGORIES.map((cat) => (
+                <option key={cat} value={cat}>
+                  {cat}
+                </option>
+              ))}
+            </select>
+          </div>
+        </div>
+
+        <div className="space-y-1.5">
+          <Label htmlFor="post-excerpt" className="text-foreground font-medium text-sm">
+            Excerpt{" "}
+            <span className="text-muted-foreground font-normal">(short summary)</span>
+          </Label>
+          <Input
+            id="post-excerpt"
+            value={excerpt}
+            onChange={(e) => setExcerpt(e.target.value)}
+            placeholder="A brief summary of your post..."
+            required
+            className="bg-background border-border focus:border-terracotta transition-colors h-11"
+          />
+        </div>
+
+        <div className="space-y-1.5">
+          <Label htmlFor="post-content" className="text-foreground font-medium text-sm">
+            Content{" "}
+            <span className="text-muted-foreground font-normal">(use blank lines for paragraphs)</span>
+          </Label>
+          <Textarea
+            id="post-content"
+            value={content}
+            onChange={(e) => setContent(e.target.value)}
+            placeholder="Write your post here..."
+            required
+            rows={10}
+            className="bg-background border-border focus:border-terracotta transition-colors resize-none"
+          />
+        </div>
+
+        <div className="flex items-center gap-3 pt-1">
+          <Button
+            type="submit"
+            disabled={isPending}
+            className="bg-terracotta hover:bg-terracotta/90 text-primary-foreground rounded-full px-8 h-11"
+          >
+            {isPending ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                Publishing...
+              </>
+            ) : (
+              <>
+                <Plus size={16} className="mr-1.5" />
+                Publish Post
+              </>
+            )}
+          </Button>
+          <Button
+            type="button"
+            variant="ghost"
+            onClick={onClose}
+            className="rounded-full px-6 h-11 text-muted-foreground hover:text-foreground"
+          >
+            Cancel
+          </Button>
+        </div>
+      </form>
+    </motion.div>
+  );
+}
+
+/* ── Blog Section ─────────────────────────────────────────── */
+function Blog({ isAdmin }: { isAdmin: boolean }) {
+  const [selectedPost, setSelectedPost] = useState<BlogPost | null>(null);
+  const [showForm, setShowForm] = useState(false);
+  const { data: posts = [], isLoading } = useGetAllPosts();
+  const { mutate: deletePost } = useDeletePost();
+
+  const handleDelete = (id: bigint) => {
+    deletePost(id, {
+      onSuccess: () => {
+        if (selectedPost?.id === id) setSelectedPost(null);
+      },
+    });
+  };
+
+  return (
+    <section id="blog" className="py-28 px-6">
+      <div className="max-w-6xl mx-auto">
+        {/* Section header */}
+        <div className="mb-14 flex items-end justify-between flex-wrap gap-6">
+          <div>
+            <FadeIn>
+              <span className="section-eyebrow mb-5 block">Blog</span>
+            </FadeIn>
+            <FadeIn delay={0.1}>
+              <h2 className="font-display text-4xl md:text-[3.25rem] font-semibold tracking-display text-foreground mb-4 leading-[1.08]">
+                Thoughts & Ideas
+              </h2>
+            </FadeIn>
+            <FadeIn delay={0.15}>
+              <p className="text-muted-foreground text-[1.0625rem] leading-relaxed max-w-xl">
+                Exploring lifestyle, creativity, and the world of digital
+                marketing — one post at a time.
+              </p>
+            </FadeIn>
+          </div>
+
+          {/* Admin: add post button */}
+          {isAdmin && !selectedPost && (
+            <FadeIn delay={0.2}>
+              <Button
+                onClick={() => setShowForm((v) => !v)}
+                className="bg-terracotta hover:bg-terracotta/90 text-primary-foreground rounded-full px-6 h-11 gap-2"
+              >
+                {showForm ? (
+                  <>
+                    <X size={15} />
+                    Close Form
+                  </>
+                ) : (
+                  <>
+                    <Plus size={15} />
+                    New Post
+                  </>
+                )}
+              </Button>
+            </FadeIn>
+          )}
+        </div>
+
+        <AnimatePresence mode="wait">
+          {selectedPost ? (
+            /* ── Detail view ── */
+            <BlogDetail
+              key="detail"
+              post={selectedPost}
+              onBack={() => setSelectedPost(null)}
+            />
+          ) : (
+            /* ── List view ── */
+            <motion.div
+              key="list"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.3 }}
+            >
+              {/* New post form (admin) */}
+              <AnimatePresence>
+                {isAdmin && showForm && (
+                  <NewPostForm key="form" onClose={() => setShowForm(false)} />
+                )}
+              </AnimatePresence>
+
+              {/* Loading skeletons */}
+              {isLoading && (
+                <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
+                  {(["sk-a", "sk-b", "sk-c"] as const).map((skId) => (
+                    <div
+                      key={skId}
+                      className="card-premium rounded-2xl p-8 flex flex-col gap-4 animate-pulse"
+                    >
+                      <div className="flex justify-between">
+                        <div className="h-3 w-20 bg-muted rounded-full" />
+                        <div className="h-3 w-24 bg-muted rounded-full" />
+                      </div>
+                      <div className="h-6 w-3/4 bg-muted rounded-lg" />
+                      <div className="space-y-2">
+                        <div className="h-3 w-full bg-muted rounded-full" />
+                        <div className="h-3 w-5/6 bg-muted rounded-full" />
+                        <div className="h-3 w-4/6 bg-muted rounded-full" />
+                      </div>
+                      <div className="pt-4 border-t border-border/60 h-3 w-16 bg-muted rounded-full" />
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {/* Posts grid */}
+              {!isLoading && posts.length > 0 && (
+                <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
+                  <AnimatePresence>
+                    {posts.map((post, i) => (
+                      <motion.div
+                        key={String(post.id)}
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, scale: 0.96 }}
+                        transition={{ duration: 0.4, delay: i * 0.07 }}
+                      >
+                        <BlogCard
+                          post={post}
+                          onRead={setSelectedPost}
+                          isAdmin={isAdmin}
+                          onDelete={handleDelete}
+                        />
+                      </motion.div>
+                    ))}
+                  </AnimatePresence>
+                </div>
+              )}
+
+              {/* Empty state */}
+              {!isLoading && posts.length === 0 && (
+                <motion.div
+                  initial={{ opacity: 0, y: 16 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5 }}
+                  className="text-center py-20"
+                >
+                  <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-terracotta/8 mb-6">
+                    <BookOpen
+                      size={28}
+                      className="text-terracotta/60"
+                      strokeWidth={1.5}
+                    />
+                  </div>
+                  <h3 className="font-display text-2xl font-semibold text-foreground mb-3">
+                    No posts yet
+                  </h3>
+                  <p className="text-muted-foreground max-w-sm mx-auto leading-relaxed">
+                    {isAdmin
+                      ? 'Click "New Post" above to publish your first blog post.'
+                      : "Check back soon — new content is on the way."}
+                  </p>
+                </motion.div>
+              )}
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
+    </section>
+  );
+}
+
 /* ── Contact ──────────────────────────────────────────────── */
 function Contact() {
   const [name, setName] = useState("");
@@ -818,14 +1328,14 @@ function Footer() {
       <div className="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
         <div className="flex items-center gap-3">
           <span className="font-display text-xl font-semibold text-foreground">
-            Jo.
+            Job JS.
           </span>
           <span className="text-muted-foreground text-sm">
             Digital Marketer · Personal Brand
           </span>
         </div>
         <div className="flex flex-col sm:flex-row items-center gap-4 text-sm text-muted-foreground text-center">
-          <span>© {year} Jo. All rights reserved.</span>
+          <span>© {year} Job JS. All rights reserved.</span>
           <span className="hidden sm:inline text-border">·</span>
           <span>
             Built with love using{" "}
@@ -845,25 +1355,79 @@ function Footer() {
 }
 
 /* ── App ──────────────────────────────────────────────────── */
+
+const LOGO_CLICK_THRESHOLD = 5;
+const LOGO_CLICK_WINDOW_MS = 2000;
+
 export default function App() {
+  const [isAdmin, setIsAdmin] = useState(false);
+  const logoClicksRef = useRef<number[]>([]);
+
+  const handleLogoClick = () => {
+    const now = Date.now();
+    // Keep only clicks within the time window
+    logoClicksRef.current = logoClicksRef.current.filter(
+      (t) => now - t < LOGO_CLICK_WINDOW_MS
+    );
+    logoClicksRef.current.push(now);
+
+    if (logoClicksRef.current.length >= LOGO_CLICK_THRESHOLD) {
+      logoClicksRef.current = [];
+      setIsAdmin((prev) => {
+        const next = !prev;
+        if (next) {
+          // Scroll to blog section after admin mode activates
+          setTimeout(() => {
+            document.querySelector("#blog")?.scrollIntoView({ behavior: "smooth" });
+          }, 100);
+        }
+        return next;
+      });
+    } else {
+      // Default logo scroll-to-top behaviour
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+  };
+
   return (
     <div className="min-h-screen gradient-mesh">
       <Toaster position="top-right" />
-      <Navbar />
-      <main>
-        <Hero />
-        <div className="section-divider" />
-        <About />
-        <div className="section-divider" />
-        <Services />
-        <div className="section-divider" />
-        <Vision />
-        <div className="section-divider" />
-        <Work />
-        <div className="section-divider" />
-        <Contact />
-      </main>
-      <Footer />
+
+      {/* Admin mode indicator */}
+      <AnimatePresence>
+        {isAdmin && (
+          <motion.div
+            initial={{ opacity: 0, y: -40 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -40 }}
+            transition={{ duration: 0.35 }}
+            className="fixed top-0 left-0 right-0 z-[60] bg-terracotta text-primary-foreground text-center text-xs font-semibold tracking-wide py-1.5 flex items-center justify-center gap-2"
+          >
+            <PenLine size={12} />
+            Admin Mode Active — click the logo again 5× to exit
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      <div className={isAdmin ? "pt-7" : ""}>
+        <Navbar onLogoClick={handleLogoClick} />
+        <main>
+          <Hero />
+          <div className="section-divider" />
+          <About />
+          <div className="section-divider" />
+          <Services />
+          <div className="section-divider" />
+          <Vision />
+          <div className="section-divider" />
+          <Work />
+          <div className="section-divider" />
+          <Blog isAdmin={isAdmin} />
+          <div className="section-divider" />
+          <Contact />
+        </main>
+        <Footer />
+      </div>
     </div>
   );
 }

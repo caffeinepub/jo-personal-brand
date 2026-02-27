@@ -13,9 +13,25 @@ export const ContactMessage = IDL.Record({
   'email' : IDL.Text,
   'message' : IDL.Text,
 });
+export const BlogPost = IDL.Record({
+  'id' : IDL.Nat,
+  'title' : IDL.Text,
+  'content' : IDL.Text,
+  'createdAt' : IDL.Int,
+  'excerpt' : IDL.Text,
+  'category' : IDL.Text,
+});
 
 export const idlService = IDL.Service({
+  'createPost' : IDL.Func(
+      [IDL.Text, IDL.Text, IDL.Text, IDL.Text],
+      [IDL.Nat],
+      [],
+    ),
+  'deletePost' : IDL.Func([IDL.Nat], [IDL.Bool], []),
   'getAllMessages' : IDL.Func([], [IDL.Vec(ContactMessage)], ['query']),
+  'getAllPosts' : IDL.Func([], [IDL.Vec(BlogPost)], ['query']),
+  'getPostById' : IDL.Func([IDL.Nat], [IDL.Opt(BlogPost)], ['query']),
   'submitContactMessage' : IDL.Func([IDL.Text, IDL.Text, IDL.Text], [], []),
 });
 
@@ -27,9 +43,25 @@ export const idlFactory = ({ IDL }) => {
     'email' : IDL.Text,
     'message' : IDL.Text,
   });
+  const BlogPost = IDL.Record({
+    'id' : IDL.Nat,
+    'title' : IDL.Text,
+    'content' : IDL.Text,
+    'createdAt' : IDL.Int,
+    'excerpt' : IDL.Text,
+    'category' : IDL.Text,
+  });
   
   return IDL.Service({
+    'createPost' : IDL.Func(
+        [IDL.Text, IDL.Text, IDL.Text, IDL.Text],
+        [IDL.Nat],
+        [],
+      ),
+    'deletePost' : IDL.Func([IDL.Nat], [IDL.Bool], []),
     'getAllMessages' : IDL.Func([], [IDL.Vec(ContactMessage)], ['query']),
+    'getAllPosts' : IDL.Func([], [IDL.Vec(BlogPost)], ['query']),
+    'getPostById' : IDL.Func([IDL.Nat], [IDL.Opt(BlogPost)], ['query']),
     'submitContactMessage' : IDL.Func([IDL.Text, IDL.Text, IDL.Text], [], []),
   });
 };
