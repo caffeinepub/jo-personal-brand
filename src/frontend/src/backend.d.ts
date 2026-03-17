@@ -19,6 +19,7 @@ export interface ContactMessage {
     name: string;
     email: string;
     message: string;
+    createdAt?: bigint;
 }
 export interface backendInterface {
     createPost(title: string, content: string, excerpt: string, category: string): Promise<bigint>;

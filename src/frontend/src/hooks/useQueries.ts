@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { useActor } from "./useActor";
 import { toast } from "sonner";
+import { useActor } from "./useActor";
 
 export function useSubmitContact() {
   const { actor } = useActor();
@@ -33,6 +33,18 @@ export function useGetAllPosts() {
     queryFn: async () => {
       if (!actor) return [];
       return actor.getAllPosts();
+    },
+    enabled: !!actor && !isFetching,
+  });
+}
+
+export function useGetAllMessages() {
+  const { actor, isFetching } = useActor();
+  return useQuery({
+    queryKey: ["messages"],
+    queryFn: async () => {
+      if (!actor) return [];
+      return actor.getAllMessages();
     },
     enabled: !!actor && !isFetching,
   });

@@ -1,32 +1,43 @@
-import { useState, useEffect, useRef } from "react";
-import { motion, AnimatePresence, useInView } from "motion/react";
-import { Toaster } from "@/components/ui/sonner";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
-import { Badge } from "@/components/ui/badge";
-import { useSubmitContact, useGetAllPosts, useCreatePost, useDeletePost } from "./hooks/useQueries";
-import type { BlogPost } from "./backend.d";
+import { Toaster } from "@/components/ui/sonner";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Textarea } from "@/components/ui/textarea";
 import {
-  Megaphone,
-  User,
-  BarChart2,
-  Lightbulb,
-  Smile,
-  MapPin,
-  Mail,
-  Menu,
-  X,
-  ArrowRight,
-  Loader2,
-  BookOpen,
   ArrowLeft,
-  Trash2,
+  ArrowRight,
+  BarChart2,
+  BookOpen,
+  ChevronRight,
+  Clock,
+  Inbox,
+  Lightbulb,
+  Linkedin,
+  Loader2,
+  Mail,
+  MapPin,
+  Megaphone,
+  Menu,
   PenLine,
   Plus,
-  ChevronRight,
+  RefreshCw,
+  Smile,
+  Trash2,
+  User,
+  X,
 } from "lucide-react";
+import { AnimatePresence, motion, useInView } from "motion/react";
+import { useEffect, useRef, useState } from "react";
+import type { BlogPost, ContactMessage } from "./backend.d";
+import {
+  useCreatePost,
+  useDeletePost,
+  useGetAllMessages,
+  useGetAllPosts,
+  useSubmitContact,
+} from "./hooks/useQueries";
 
 /* ── Fade-in wrapper ─────────────────────────────────────── */
 function FadeIn({
@@ -294,7 +305,11 @@ function Hero() {
       >
         <motion.div
           animate={{ y: [0, 6, 0] }}
-          transition={{ repeat: Infinity, duration: 1.4, ease: "easeInOut" }}
+          transition={{
+            repeat: Number.POSITIVE_INFINITY,
+            duration: 1.4,
+            ease: "easeInOut",
+          }}
           className="w-0.5 h-7 bg-gradient-to-b from-white/50 to-transparent rounded-full"
         />
       </motion.div>
@@ -360,7 +375,8 @@ function About() {
                 {/* Quote */}
                 <div className="mt-8 pt-6 border-t border-border/50">
                   <p className="font-display text-[0.9375rem] italic text-foreground/70 leading-relaxed">
-                    "Creating meaningful digital experiences, one project at a time."
+                    "Creating meaningful digital experiences, one project at a
+                    time."
                   </p>
                 </div>
               </div>
@@ -440,7 +456,11 @@ function Services() {
 
                   {/* Icon — no circle, just raw icon with subtle underline */}
                   <div className="flex items-end gap-3">
-                    <Icon size={26} className="text-terracotta" strokeWidth={1.5} />
+                    <Icon
+                      size={26}
+                      className="text-terracotta"
+                      strokeWidth={1.5}
+                    />
                     <div className="flex-1 h-px bg-gradient-to-r from-terracotta/25 to-transparent mb-1" />
                   </div>
 
@@ -477,7 +497,9 @@ function Vision() {
 
       <div className="max-w-4xl mx-auto text-center relative z-10">
         <FadeIn>
-          <span className="section-eyebrow justify-center mb-6 flex">My Vision</span>
+          <span className="section-eyebrow justify-center mb-6 flex">
+            My Vision
+          </span>
         </FadeIn>
 
         {/* Large decorative quote mark — refined size */}
@@ -509,16 +531,20 @@ function Vision() {
         {/* Values row — refined pill style */}
         <FadeIn delay={0.3}>
           <div className="flex flex-wrap justify-center gap-2.5">
-            {["Authenticity", "Creativity", "Growth", "Collaboration", "Impact"].map(
-              (value) => (
-                <span
-                  key={value}
-                  className="px-5 py-2 rounded-full border border-terracotta/20 bg-terracotta/5 text-terracotta font-medium text-xs tracking-wide uppercase hover:bg-terracotta/10 transition-colors cursor-default"
-                >
-                  {value}
-                </span>
-              )
-            )}
+            {[
+              "Authenticity",
+              "Creativity",
+              "Growth",
+              "Collaboration",
+              "Impact",
+            ].map((value) => (
+              <span
+                key={value}
+                className="px-5 py-2 rounded-full border border-terracotta/20 bg-terracotta/5 text-terracotta font-medium text-xs tracking-wide uppercase hover:bg-terracotta/10 transition-colors cursor-default"
+              >
+                {value}
+              </span>
+            ))}
           </div>
         </FadeIn>
       </div>
@@ -580,8 +606,8 @@ function Work() {
           </FadeIn>
           <FadeIn delay={0.15}>
             <p className="text-muted-foreground text-[1.0625rem] leading-relaxed max-w-xl">
-              A look at the types of work I've been involved in across
-              marketing and creative projects.
+              A look at the types of work I've been involved in across marketing
+              and creative projects.
             </p>
           </FadeIn>
         </div>
@@ -780,14 +806,17 @@ function BlogDetail({
 
       {/* Article body */}
       <article className="prose-blog">
-        {post.content.split("\n\n").filter(Boolean).map((paragraph) => (
-          <p
-            key={paragraph.slice(0, 40)}
-            className="text-[1.0625rem] text-foreground/85 leading-[1.85] mb-6 last:mb-0"
-          >
-            {paragraph}
-          </p>
-        ))}
+        {post.content
+          .split("\n\n")
+          .filter(Boolean)
+          .map((paragraph) => (
+            <p
+              key={paragraph.slice(0, 40)}
+              className="text-[1.0625rem] text-foreground/85 leading-[1.85] mb-6 last:mb-0"
+            >
+              {paragraph}
+            </p>
+          ))}
       </article>
 
       {/* Footer nav */}
@@ -834,7 +863,7 @@ function NewPostForm({ onClose }: { onClose: () => void }) {
         onSuccess: () => {
           onClose();
         },
-      }
+      },
     );
   };
 
@@ -869,7 +898,10 @@ function NewPostForm({ onClose }: { onClose: () => void }) {
       <form onSubmit={handleSubmit} className="space-y-5">
         <div className="grid sm:grid-cols-2 gap-5">
           <div className="space-y-1.5">
-            <Label htmlFor="post-title" className="text-foreground font-medium text-sm">
+            <Label
+              htmlFor="post-title"
+              className="text-foreground font-medium text-sm"
+            >
               Title
             </Label>
             <Input
@@ -883,7 +915,10 @@ function NewPostForm({ onClose }: { onClose: () => void }) {
           </div>
 
           <div className="space-y-1.5">
-            <Label htmlFor="post-category" className="text-foreground font-medium text-sm">
+            <Label
+              htmlFor="post-category"
+              className="text-foreground font-medium text-sm"
+            >
               Category
             </Label>
             <select
@@ -902,9 +937,14 @@ function NewPostForm({ onClose }: { onClose: () => void }) {
         </div>
 
         <div className="space-y-1.5">
-          <Label htmlFor="post-excerpt" className="text-foreground font-medium text-sm">
+          <Label
+            htmlFor="post-excerpt"
+            className="text-foreground font-medium text-sm"
+          >
             Excerpt{" "}
-            <span className="text-muted-foreground font-normal">(short summary)</span>
+            <span className="text-muted-foreground font-normal">
+              (short summary)
+            </span>
           </Label>
           <Input
             id="post-excerpt"
@@ -917,9 +957,14 @@ function NewPostForm({ onClose }: { onClose: () => void }) {
         </div>
 
         <div className="space-y-1.5">
-          <Label htmlFor="post-content" className="text-foreground font-medium text-sm">
+          <Label
+            htmlFor="post-content"
+            className="text-foreground font-medium text-sm"
+          >
             Content{" "}
-            <span className="text-muted-foreground font-normal">(use blank lines for paragraphs)</span>
+            <span className="text-muted-foreground font-normal">
+              (use blank lines for paragraphs)
+            </span>
           </Label>
           <Textarea
             id="post-content"
@@ -1147,7 +1192,7 @@ function Contact() {
           setEmail("");
           setMessage("");
         },
-      }
+      },
     );
   };
 
@@ -1176,7 +1221,12 @@ function Contact() {
             <FadeIn delay={0.3}>
               <div className="space-y-5">
                 <div className="flex items-start gap-4 group">
-                  <MapPin size={17} className="text-terracotta mt-1 shrink-0" strokeWidth={1.75} aria-hidden="true" />
+                  <MapPin
+                    size={17}
+                    className="text-terracotta mt-1 shrink-0"
+                    strokeWidth={1.75}
+                    aria-hidden="true"
+                  />
                   <div>
                     <p className="text-[0.6875rem] text-muted-foreground uppercase tracking-[0.12em] mb-0.5 font-medium">
                       Location
@@ -1187,7 +1237,11 @@ function Contact() {
                   </div>
                 </div>
                 <div className="flex items-start gap-4 group">
-                  <Mail size={17} className="text-terracotta mt-1 shrink-0" strokeWidth={1.75} />
+                  <Mail
+                    size={17}
+                    className="text-terracotta mt-1 shrink-0"
+                    strokeWidth={1.75}
+                  />
                   <div>
                     <p className="text-[0.6875rem] text-muted-foreground uppercase tracking-[0.12em] mb-0.5 font-medium">
                       Email
@@ -1247,7 +1301,10 @@ function Contact() {
                     className="space-y-5"
                   >
                     <div className="space-y-1.5">
-                      <Label htmlFor="name" className="text-foreground font-medium text-sm">
+                      <Label
+                        htmlFor="name"
+                        className="text-foreground font-medium text-sm"
+                      >
                         Name
                       </Label>
                       <Input
@@ -1262,7 +1319,10 @@ function Contact() {
                     </div>
 
                     <div className="space-y-1.5">
-                      <Label htmlFor="email" className="text-foreground font-medium text-sm">
+                      <Label
+                        htmlFor="email"
+                        className="text-foreground font-medium text-sm"
+                      >
                         Email
                       </Label>
                       <Input
@@ -1278,7 +1338,10 @@ function Contact() {
                     </div>
 
                     <div className="space-y-1.5">
-                      <Label htmlFor="message" className="text-foreground font-medium text-sm">
+                      <Label
+                        htmlFor="message"
+                        className="text-foreground font-medium text-sm"
+                      >
                         Message
                       </Label>
                       <Textarea
@@ -1333,6 +1396,15 @@ function Footer() {
           <span className="text-muted-foreground text-sm">
             Digital Marketer · Personal Brand
           </span>
+          <a
+            href="https://www.linkedin.com/in/jobsaji/"
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="LinkedIn"
+            className="text-muted-foreground hover:text-[#0A66C2] transition-colors"
+          >
+            <Linkedin size={20} />
+          </a>
         </div>
         <div className="flex flex-col sm:flex-row items-center gap-4 text-sm text-muted-foreground text-center">
           <span>© {year} Job JS. All rights reserved.</span>
@@ -1356,6 +1428,109 @@ function Footer() {
 
 /* ── App ──────────────────────────────────────────────────── */
 
+/* ── Admin Leads Panel ───────────────────────────────────── */
+function AdminLeadsPanel() {
+  const {
+    data: messages = [],
+    isLoading,
+    refetch,
+    isFetching,
+  } = useGetAllMessages();
+
+  return (
+    <div>
+      <div className="flex items-center justify-between mb-5">
+        <div className="flex items-center gap-2">
+          <Inbox size={16} className="text-terracotta" />
+          <span className="text-sm font-semibold text-foreground">
+            {messages.length} Lead{messages.length !== 1 ? "s" : ""}
+          </span>
+        </div>
+        <Button
+          size="sm"
+          variant="outline"
+          onClick={() => refetch()}
+          disabled={isFetching}
+          className="gap-2 h-8 text-xs"
+          data-ocid="leads.secondary_button"
+        >
+          <RefreshCw size={12} className={isFetching ? "animate-spin" : ""} />
+          Refresh
+        </Button>
+      </div>
+
+      {isLoading ? (
+        <div className="space-y-3" data-ocid="leads.loading_state">
+          {(["l1", "l2", "l3"] as const).map((k) => (
+            <div
+              key={k}
+              className="rounded-xl border border-border/60 p-4 animate-pulse flex flex-col gap-2"
+            >
+              <div className="h-3 w-32 bg-muted rounded-full" />
+              <div className="h-3 w-48 bg-muted rounded-full" />
+              <div className="h-3 w-full bg-muted rounded-full" />
+            </div>
+          ))}
+        </div>
+      ) : messages.length === 0 ? (
+        <div
+          className="text-center py-12 text-muted-foreground"
+          data-ocid="leads.empty_state"
+        >
+          <Inbox size={32} className="mx-auto mb-3 opacity-30" />
+          <p className="text-sm">
+            No leads yet. Form submissions will appear here.
+          </p>
+        </div>
+      ) : (
+        <div className="space-y-3">
+          {messages.map((msg: ContactMessage, i: number) => (
+            <motion.div
+              key={msg.email + String(i)}
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: i * 0.04 }}
+              className="rounded-xl border border-border/60 bg-background/50 p-4"
+              data-ocid={`leads.item.${i + 1}`}
+            >
+              <div className="flex items-start justify-between gap-3 mb-2">
+                <span className="font-semibold text-sm text-foreground">
+                  {msg.name}
+                </span>
+                <a
+                  href={`mailto:${msg.email}`}
+                  className="text-xs text-terracotta hover:underline flex items-center gap-1 shrink-0"
+                >
+                  <Mail size={11} />
+                  {msg.email}
+                </a>
+              </div>
+              <p className="text-sm text-muted-foreground leading-relaxed whitespace-pre-wrap">
+                {msg.message}
+              </p>
+              {(msg as any).createdAt && (
+                <div className="text-xs text-muted-foreground/60 flex items-center gap-1 mt-2">
+                  <Clock size={10} />
+                  {new Date(Number((msg as any).createdAt) / 1_000_000)
+                    .toLocaleString("en-US", {
+                      month: "short",
+                      day: "numeric",
+                      year: "numeric",
+                      hour: "numeric",
+                      minute: "2-digit",
+                      hour12: true,
+                    })
+                    .replace(",", " ·")}
+                </div>
+              )}
+            </motion.div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
 const LOGO_CLICK_THRESHOLD = 5;
 const LOGO_CLICK_WINDOW_MS = 2000;
 
@@ -1367,7 +1542,7 @@ export default function App() {
     const now = Date.now();
     // Keep only clicks within the time window
     logoClicksRef.current = logoClicksRef.current.filter(
-      (t) => now - t < LOGO_CLICK_WINDOW_MS
+      (t) => now - t < LOGO_CLICK_WINDOW_MS,
     );
     logoClicksRef.current.push(now);
 
@@ -1378,7 +1553,9 @@ export default function App() {
         if (next) {
           // Scroll to blog section after admin mode activates
           setTimeout(() => {
-            document.querySelector("#blog")?.scrollIntoView({ behavior: "smooth" });
+            document
+              .querySelector("#blog")
+              ?.scrollIntoView({ behavior: "smooth" });
           }, 100);
         }
         return next;
@@ -1411,6 +1588,49 @@ export default function App() {
 
       <div className={isAdmin ? "pt-7" : ""}>
         <Navbar onLogoClick={handleLogoClick} />
+
+        {/* Admin Dashboard Panel */}
+        <AnimatePresence>
+          {isAdmin && (
+            <motion.section
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: "auto" }}
+              exit={{ opacity: 0, height: 0 }}
+              transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+              className="overflow-hidden border-b border-border/60 bg-background/95 backdrop-blur-sm"
+              data-ocid="admin.panel"
+            >
+              <div className="max-w-4xl mx-auto px-6 py-8">
+                <h2 className="font-display text-lg font-semibold text-foreground mb-6 flex items-center gap-2">
+                  <PenLine size={16} className="text-terracotta" />
+                  Admin Dashboard
+                </h2>
+                <Tabs defaultValue="leads" data-ocid="admin.tab">
+                  <TabsList className="mb-6">
+                    <TabsTrigger value="leads" data-ocid="admin.leads.tab">
+                      <Inbox size={13} className="mr-1.5" />
+                      Leads
+                    </TabsTrigger>
+                    <TabsTrigger value="blog" data-ocid="admin.blog.tab">
+                      <PenLine size={13} className="mr-1.5" />
+                      Blog Posts
+                    </TabsTrigger>
+                  </TabsList>
+                  <TabsContent value="leads">
+                    <AdminLeadsPanel />
+                  </TabsContent>
+                  <TabsContent value="blog">
+                    <div className="text-sm text-muted-foreground">
+                      Scroll down to the Blog section below to manage posts,
+                      create new ones, and delete existing entries.
+                    </div>
+                  </TabsContent>
+                </Tabs>
+              </div>
+            </motion.section>
+          )}
+        </AnimatePresence>
+
         <main>
           <Hero />
           <div className="section-divider" />
