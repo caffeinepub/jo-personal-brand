@@ -7,7 +7,14 @@ export interface None {
     __kind__: "None";
 }
 export type Option<T> = Some<T> | None;
-export interface BlogPost {
+export interface Lead {
+    id: bigint;
+    name: string;
+    email: string;
+    message: string;
+    timestamp: bigint;
+}
+export interface Post {
     id: bigint;
     title: string;
     content: string;
@@ -15,17 +22,11 @@ export interface BlogPost {
     excerpt: string;
     category: string;
 }
-export interface ContactMessage {
-    name: string;
-    email: string;
-    message: string;
-    createdAt?: bigint;
-}
 export interface backendInterface {
-    createPost(title: string, content: string, excerpt: string, category: string): Promise<bigint>;
+    createPost(title: string, content: string, category: string, excerpt: string): Promise<bigint>;
     deletePost(id: bigint): Promise<boolean>;
-    getAllMessages(): Promise<Array<ContactMessage>>;
-    getAllPosts(): Promise<Array<BlogPost>>;
-    getPostById(id: bigint): Promise<BlogPost | null>;
-    submitContactMessage(name: string, email: string, message: string): Promise<void>;
+    getAllLeads(): Promise<Array<Lead>>;
+    getAllPosts(): Promise<Array<Post>>;
+    getPostById(id: bigint): Promise<Post | null>;
+    submitLead(name: string, email: string, message: string): Promise<bigint>;
 }

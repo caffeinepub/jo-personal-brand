@@ -1,53 +1,42 @@
-import Array "mo:core/Array";
 import Map "mo:core/Map";
-import Nat "mo:core/Nat";
+import Array "mo:core/Array";
+import Int "mo:core/Int";
 import Time "mo:core/Time";
 import Iter "mo:core/Iter";
+import Nat "mo:core/Nat";
 
 
 
 actor {
-  type ContactMessage = {
-    name : Text;
-    email : Text;
-    message : Text;
-  };
-
-  type BlogPost = {
+  public type Post = {
     id : Nat;
     title : Text;
     content : Text;
-    excerpt : Text;
     category : Text;
+    excerpt : Text;
     createdAt : Int;
   };
 
-  var messages : [ContactMessage] = [];
-  let posts = Map.empty<Nat, BlogPost>();
+  public type Lead = {
+    id : Nat;
+    name : Text;
+    email : Text;
+    message : Text;
+    timestamp : Int;
+  };
+
+  let posts = Map.empty<Nat, Post>();
+  let leads = Map.empty<Nat, Lead>();
   var nextPostId = 1;
+  var nextLeadId = 1;
 
-  // Contact Messages
-  public shared ({ caller }) func submitContactMessage(name : Text, email : Text, message : Text) : async () {
-    let newMessage : ContactMessage = {
-      name;
-      email;
-      message;
-    };
-    messages := messages.concat([newMessage]);
-  };
-
-  public query ({ caller }) func getAllMessages() : async [ContactMessage] {
-    messages;
-  };
-
-  // Blog Post Functions
-  public shared ({ caller }) func createPost(title : Text, content : Text, excerpt : Text, category : Text) : async Nat {
-    let post : BlogPost = {
+  public shared ({ caller }) func createPost(title : Text, content : Text, category : Text, excerpt : Text) : async Nat {
+    let post : Post = {
       id = nextPostId;
       title;
       content;
-      excerpt;
       category;
+      excerpt;
       createdAt = Time.now();
     };
     posts.add(nextPostId, post);
@@ -55,7 +44,7 @@ actor {
     post.id;
   };
 
-  public query ({ caller }) func getAllPosts() : async [BlogPost] {
+  public query ({ caller }) func getAllPosts() : async [Post] {
     posts.values().toArray().sort(
       func(a, b) {
         Nat.compare(b.id, a.id);
@@ -63,7 +52,7 @@ actor {
     );
   };
 
-  public query ({ caller }) func getPostById(id : Nat) : async ?BlogPost {
+  public query ({ caller }) func getPostById(id : Nat) : async ?Post {
     posts.get(id);
   };
 
@@ -71,5 +60,26 @@ actor {
     let existed = posts.containsKey(id);
     posts.remove(id);
     existed;
+  };
+
+  public shared ({ caller }) func submitLead(name : Text, email : Text, message : Text) : async Nat {
+    let lead : Lead = {
+      id = nextLeadId;
+      name;
+      email;
+      message;
+      timestamp = Time.now();
+    };
+    leads.add(nextLeadId, lead);
+    nextLeadId += 1;
+    lead.id;
+  };
+
+  public query ({ caller }) func getAllLeads() : async [Lead] {
+    leads.values().toArray().sort(
+      func(a, b) {
+        Nat.compare(b.id, a.id);
+      }
+    );
   };
 };

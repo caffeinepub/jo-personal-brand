@@ -1,34 +1,10 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { toast } from "sonner";
+import type { Lead, Post } from "../backend.d";
 import { useActor } from "./useActor";
-
-export function useSubmitContact() {
-  const { actor } = useActor();
-  return useMutation({
-    mutationFn: async ({
-      name,
-      email,
-      message,
-    }: {
-      name: string;
-      email: string;
-      message: string;
-    }) => {
-      if (!actor) throw new Error("Not connected");
-      await actor.submitContactMessage(name, email, message);
-    },
-    onSuccess: () => {
-      toast.success("Message sent! I'll get back to you soon.");
-    },
-    onError: () => {
-      toast.error("Something went wrong. Please try again.");
-    },
-  });
-}
 
 export function useGetAllPosts() {
   const { actor, isFetching } = useActor();
-  return useQuery({
+  return useQuery<Post[]>({
     queryKey: ["posts"],
     queryFn: async () => {
       if (!actor) return [];
@@ -38,60 +14,62 @@ export function useGetAllPosts() {
   });
 }
 
-export function useGetAllMessages() {
+export function useGetAllLeads() {
   const { actor, isFetching } = useActor();
-  return useQuery({
-    queryKey: ["messages"],
+  return useQuery<Lead[]>({
+    queryKey: ["leads"],
     queryFn: async () => {
       if (!actor) return [];
-      return actor.getAllMessages();
+      return actor.getAllLeads();
     },
     enabled: !!actor && !isFetching,
   });
 }
 
+export function useSubmitLead() {
+  const { actor } = useActor();
+  return useMutation({
+    mutationFn: async ({
+      name,
+      email,
+      message,
+    }: { name: string; email: string; message: string }) => {
+      if (!actor) throw new Error("Not connected");
+      return actor.submitLead(name, email, message);
+    },
+  });
+}
+
 export function useCreatePost() {
   const { actor } = useActor();
-  const queryClient = useQueryClient();
+  const qc = useQueryClient();
   return useMutation({
     mutationFn: async ({
       title,
       content,
-      excerpt,
       category,
+      excerpt,
     }: {
       title: string;
       content: string;
-      excerpt: string;
       category: string;
+      excerpt: string;
     }) => {
       if (!actor) throw new Error("Not connected");
-      return actor.createPost(title, content, excerpt, category);
+      return actor.createPost(title, content, category, excerpt);
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["posts"] });
-      toast.success("Post published!");
-    },
-    onError: () => {
-      toast.error("Failed to publish post. Please try again.");
-    },
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["posts"] }),
   });
 }
 
 export function useDeletePost() {
   const { actor } = useActor();
-  const queryClient = useQueryClient();
+  const qc = useQueryClient();
   return useMutation({
     mutationFn: async (id: bigint) => {
       if (!actor) throw new Error("Not connected");
       return actor.deletePost(id);
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["posts"] });
-      toast.success("Post deleted.");
-    },
-    onError: () => {
-      toast.error("Failed to delete post. Please try again.");
-    },
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["posts"] }),
   });
 }

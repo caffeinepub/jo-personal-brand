@@ -8,12 +8,14 @@
 
 import { IDL } from '@icp-sdk/core/candid';
 
-export const ContactMessage = IDL.Record({
+export const Lead = IDL.Record({
+  'id' : IDL.Nat,
   'name' : IDL.Text,
   'email' : IDL.Text,
   'message' : IDL.Text,
+  'timestamp' : IDL.Int,
 });
-export const BlogPost = IDL.Record({
+export const Post = IDL.Record({
   'id' : IDL.Nat,
   'title' : IDL.Text,
   'content' : IDL.Text,
@@ -29,21 +31,23 @@ export const idlService = IDL.Service({
       [],
     ),
   'deletePost' : IDL.Func([IDL.Nat], [IDL.Bool], []),
-  'getAllMessages' : IDL.Func([], [IDL.Vec(ContactMessage)], ['query']),
-  'getAllPosts' : IDL.Func([], [IDL.Vec(BlogPost)], ['query']),
-  'getPostById' : IDL.Func([IDL.Nat], [IDL.Opt(BlogPost)], ['query']),
-  'submitContactMessage' : IDL.Func([IDL.Text, IDL.Text, IDL.Text], [], []),
+  'getAllLeads' : IDL.Func([], [IDL.Vec(Lead)], ['query']),
+  'getAllPosts' : IDL.Func([], [IDL.Vec(Post)], ['query']),
+  'getPostById' : IDL.Func([IDL.Nat], [IDL.Opt(Post)], ['query']),
+  'submitLead' : IDL.Func([IDL.Text, IDL.Text, IDL.Text], [IDL.Nat], []),
 });
 
 export const idlInitArgs = [];
 
 export const idlFactory = ({ IDL }) => {
-  const ContactMessage = IDL.Record({
+  const Lead = IDL.Record({
+    'id' : IDL.Nat,
     'name' : IDL.Text,
     'email' : IDL.Text,
     'message' : IDL.Text,
+    'timestamp' : IDL.Int,
   });
-  const BlogPost = IDL.Record({
+  const Post = IDL.Record({
     'id' : IDL.Nat,
     'title' : IDL.Text,
     'content' : IDL.Text,
@@ -59,10 +63,10 @@ export const idlFactory = ({ IDL }) => {
         [],
       ),
     'deletePost' : IDL.Func([IDL.Nat], [IDL.Bool], []),
-    'getAllMessages' : IDL.Func([], [IDL.Vec(ContactMessage)], ['query']),
-    'getAllPosts' : IDL.Func([], [IDL.Vec(BlogPost)], ['query']),
-    'getPostById' : IDL.Func([IDL.Nat], [IDL.Opt(BlogPost)], ['query']),
-    'submitContactMessage' : IDL.Func([IDL.Text, IDL.Text, IDL.Text], [], []),
+    'getAllLeads' : IDL.Func([], [IDL.Vec(Lead)], ['query']),
+    'getAllPosts' : IDL.Func([], [IDL.Vec(Post)], ['query']),
+    'getPostById' : IDL.Func([IDL.Nat], [IDL.Opt(Post)], ['query']),
+    'submitLead' : IDL.Func([IDL.Text, IDL.Text, IDL.Text], [IDL.Nat], []),
   });
 };
 

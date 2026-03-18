@@ -89,7 +89,14 @@ export class ExternalBlob {
         return this;
     }
 }
-export interface BlogPost {
+export interface Lead {
+    id: bigint;
+    name: string;
+    email: string;
+    message: string;
+    timestamp: bigint;
+}
+export interface Post {
     id: bigint;
     title: string;
     content: string;
@@ -97,20 +104,15 @@ export interface BlogPost {
     excerpt: string;
     category: string;
 }
-export interface ContactMessage {
-    name: string;
-    email: string;
-    message: string;
-}
 export interface backendInterface {
-    createPost(title: string, content: string, excerpt: string, category: string): Promise<bigint>;
+    createPost(title: string, content: string, category: string, excerpt: string): Promise<bigint>;
     deletePost(id: bigint): Promise<boolean>;
-    getAllMessages(): Promise<Array<ContactMessage>>;
-    getAllPosts(): Promise<Array<BlogPost>>;
-    getPostById(id: bigint): Promise<BlogPost | null>;
-    submitContactMessage(name: string, email: string, message: string): Promise<void>;
+    getAllLeads(): Promise<Array<Lead>>;
+    getAllPosts(): Promise<Array<Post>>;
+    getPostById(id: bigint): Promise<Post | null>;
+    submitLead(name: string, email: string, message: string): Promise<bigint>;
 }
-import type { BlogPost as _BlogPost } from "./declarations/backend.did.d.ts";
+import type { Post as _Post } from "./declarations/backend.did.d.ts";
 export class Backend implements backendInterface {
     constructor(private actor: ActorSubclass<_SERVICE>, private _uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, private _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, private processError?: (error: unknown) => never){}
     async createPost(arg0: string, arg1: string, arg2: string, arg3: string): Promise<bigint> {
@@ -141,21 +143,21 @@ export class Backend implements backendInterface {
             return result;
         }
     }
-    async getAllMessages(): Promise<Array<ContactMessage>> {
+    async getAllLeads(): Promise<Array<Lead>> {
         if (this.processError) {
             try {
-                const result = await this.actor.getAllMessages();
+                const result = await this.actor.getAllLeads();
                 return result;
             } catch (e) {
                 this.processError(e);
                 throw new Error("unreachable");
             }
         } else {
-            const result = await this.actor.getAllMessages();
+            const result = await this.actor.getAllLeads();
             return result;
         }
     }
-    async getAllPosts(): Promise<Array<BlogPost>> {
+    async getAllPosts(): Promise<Array<Post>> {
         if (this.processError) {
             try {
                 const result = await this.actor.getAllPosts();
@@ -169,7 +171,7 @@ export class Backend implements backendInterface {
             return result;
         }
     }
-    async getPostById(arg0: bigint): Promise<BlogPost | null> {
+    async getPostById(arg0: bigint): Promise<Post | null> {
         if (this.processError) {
             try {
                 const result = await this.actor.getPostById(arg0);
@@ -183,22 +185,22 @@ export class Backend implements backendInterface {
             return from_candid_opt_n1(this._uploadFile, this._downloadFile, result);
         }
     }
-    async submitContactMessage(arg0: string, arg1: string, arg2: string): Promise<void> {
+    async submitLead(arg0: string, arg1: string, arg2: string): Promise<bigint> {
         if (this.processError) {
             try {
-                const result = await this.actor.submitContactMessage(arg0, arg1, arg2);
+                const result = await this.actor.submitLead(arg0, arg1, arg2);
                 return result;
             } catch (e) {
                 this.processError(e);
                 throw new Error("unreachable");
             }
         } else {
-            const result = await this.actor.submitContactMessage(arg0, arg1, arg2);
+            const result = await this.actor.submitLead(arg0, arg1, arg2);
             return result;
         }
     }
 }
-function from_candid_opt_n1(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: [] | [_BlogPost]): BlogPost | null {
+function from_candid_opt_n1(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: [] | [_Post]): Post | null {
     return value.length === 0 ? null : value[0];
 }
 export interface CreateActorOptions {
