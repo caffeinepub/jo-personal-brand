@@ -40,7 +40,7 @@ function TestimonialCard({
       data-ocid={`testimonials.item.${index + 1}`}
       className="bg-card border border-border rounded-card overflow-hidden hover:shadow-card-hover transition-all flex flex-col group"
     >
-      {/* Top: Photo + Business Name */}
+      {/* Top: Initials Avatar + Business Name */}
       <div className="flex flex-col items-center pt-8 pb-5 px-6 border-b border-border bg-muted/30 relative">
         {/* Decorative quote mark */}
         <span
@@ -50,28 +50,8 @@ function TestimonialCard({
           &#8220;
         </span>
 
-        {/* Photo / Logo */}
-        {testimonial.photoUrl ? (
-          <img
-            src={testimonial.photoUrl}
-            alt={testimonial.clientName}
-            className="w-16 h-16 rounded-full object-cover border-2 border-primary/20 shadow-sm mb-3"
-            onError={(e) => {
-              // Fallback to initials if image fails
-              (e.currentTarget as HTMLImageElement).style.display = "none";
-              const fallback = e.currentTarget
-                .nextElementSibling as HTMLElement;
-              if (fallback) fallback.style.display = "flex";
-            }}
-          />
-        ) : null}
-        {/* Initials fallback (shown when no photo or image fails) */}
-        <div
-          className={`w-16 h-16 rounded-full bg-primary/10 items-center justify-center flex-shrink-0 mb-3 ${
-            testimonial.photoUrl ? "hidden" : "flex"
-          }`}
-          aria-hidden={!!testimonial.photoUrl}
-        >
+        {/* Initials Avatar */}
+        <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0 mb-3">
           <span className="text-primary font-display font-bold text-xl">
             {testimonial.clientName.charAt(0).toUpperCase()}
           </span>
