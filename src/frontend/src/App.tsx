@@ -7,6 +7,7 @@ import Contact from "./components/Contact";
 import Footer from "./components/Footer";
 import Hero from "./components/Hero";
 import Navbar from "./components/Navbar";
+import Testimonials from "./components/Testimonials";
 import Vision from "./components/Vision";
 import WhatIDo from "./components/WhatIDo";
 import Work from "./components/Work";
@@ -36,6 +37,7 @@ export default function App() {
         <WhatIDo />
         <Vision />
         <Work />
+        <Testimonials />
         <Blog />
         <Contact />
       </main>

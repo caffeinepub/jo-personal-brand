@@ -13,6 +13,7 @@ const NAV_LINKS = [
   { label: "What I Do", href: "#what-i-do" },
   { label: "Vision", href: "#vision" },
   { label: "Work", href: "#work" },
+  { label: "Testimonials", href: "#testimonials" },
   { label: "Blog", href: "#blog" },
   { label: "Contact", href: "#contact" },
 ];
@@ -35,7 +36,7 @@ export default function Navbar({ onLogoClick }: NavbarProps) {
           : "bg-transparent"
       }`}
     >
-      <nav className="max-w-7xl mx-auto px-6 md:px-12 h-16 flex items-center justify-between">
+      <nav className="max-w-7xl mx-auto px-6 md:px-12 h-28 flex items-center justify-between">
         {/* Logo */}
         <button
           type="button"
@@ -47,12 +48,12 @@ export default function Navbar({ onLogoClick }: NavbarProps) {
           <img
             src="/assets/job_saji_digital_marketing_logo-019d4e9d-70c3-73b3-834e-5cb8490a3af0.png"
             alt="Job JS logo"
-            className="h-14 w-auto"
+            className="h-24 w-auto"
           />
         </button>
 
         {/* Desktop links */}
-        <div className="hidden md:flex items-center gap-7">
+        <div className="hidden md:flex items-center gap-6">
           {NAV_LINKS.map((link) => (
             <a
               key={link.href}

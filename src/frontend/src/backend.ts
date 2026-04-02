@@ -104,11 +104,22 @@ export interface Post {
     excerpt: string;
     category: string;
 }
+export interface Testimonial {
+    id: bigint;
+    clientName: string;
+    createdAt: bigint;
+    reviewText: string;
+    rating: bigint;
+    clientTitle: string;
+}
 export interface backendInterface {
     createPost(title: string, content: string, category: string, excerpt: string): Promise<bigint>;
+    createTestimonial(clientName: string, clientTitle: string, reviewText: string, rating: bigint): Promise<bigint>;
     deletePost(id: bigint): Promise<boolean>;
+    deleteTestimonial(id: bigint): Promise<boolean>;
     getAllLeads(): Promise<Array<Lead>>;
     getAllPosts(): Promise<Array<Post>>;
+    getAllTestimonials(): Promise<Array<Testimonial>>;
     getPostById(id: bigint): Promise<Post | null>;
     submitLead(name: string, email: string, message: string): Promise<bigint>;
 }
@@ -129,6 +140,20 @@ export class Backend implements backendInterface {
             return result;
         }
     }
+    async createTestimonial(arg0: string, arg1: string, arg2: string, arg3: bigint): Promise<bigint> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.createTestimonial(arg0, arg1, arg2, arg3);
+                return result;
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.createTestimonial(arg0, arg1, arg2, arg3);
+            return result;
+        }
+    }
     async deletePost(arg0: bigint): Promise<boolean> {
         if (this.processError) {
             try {
@@ -140,6 +165,20 @@ export class Backend implements backendInterface {
             }
         } else {
             const result = await this.actor.deletePost(arg0);
+            return result;
+        }
+    }
+    async deleteTestimonial(arg0: bigint): Promise<boolean> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.deleteTestimonial(arg0);
+                return result;
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.deleteTestimonial(arg0);
             return result;
         }
     }
@@ -168,6 +207,20 @@ export class Backend implements backendInterface {
             }
         } else {
             const result = await this.actor.getAllPosts();
+            return result;
+        }
+    }
+    async getAllTestimonials(): Promise<Array<Testimonial>> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.getAllTestimonials();
+                return result;
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.getAllTestimonials();
             return result;
         }
     }

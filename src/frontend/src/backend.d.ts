@@ -22,11 +22,22 @@ export interface Post {
     excerpt: string;
     category: string;
 }
+export interface Testimonial {
+    id: bigint;
+    clientName: string;
+    createdAt: bigint;
+    reviewText: string;
+    rating: bigint;
+    clientTitle: string;
+}
 export interface backendInterface {
     createPost(title: string, content: string, category: string, excerpt: string): Promise<bigint>;
+    createTestimonial(clientName: string, clientTitle: string, reviewText: string, rating: bigint): Promise<bigint>;
     deletePost(id: bigint): Promise<boolean>;
+    deleteTestimonial(id: bigint): Promise<boolean>;
     getAllLeads(): Promise<Array<Lead>>;
     getAllPosts(): Promise<Array<Post>>;
+    getAllTestimonials(): Promise<Array<Testimonial>>;
     getPostById(id: bigint): Promise<Post | null>;
     submitLead(name: string, email: string, message: string): Promise<bigint>;
 }

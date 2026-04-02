@@ -23,6 +23,14 @@ export const Post = IDL.Record({
   'excerpt' : IDL.Text,
   'category' : IDL.Text,
 });
+export const Testimonial = IDL.Record({
+  'id' : IDL.Nat,
+  'clientName' : IDL.Text,
+  'createdAt' : IDL.Int,
+  'reviewText' : IDL.Text,
+  'rating' : IDL.Nat,
+  'clientTitle' : IDL.Text,
+});
 
 export const idlService = IDL.Service({
   'createPost' : IDL.Func(
@@ -30,9 +38,16 @@ export const idlService = IDL.Service({
       [IDL.Nat],
       [],
     ),
+  'createTestimonial' : IDL.Func(
+      [IDL.Text, IDL.Text, IDL.Text, IDL.Nat],
+      [IDL.Nat],
+      [],
+    ),
   'deletePost' : IDL.Func([IDL.Nat], [IDL.Bool], []),
+  'deleteTestimonial' : IDL.Func([IDL.Nat], [IDL.Bool], []),
   'getAllLeads' : IDL.Func([], [IDL.Vec(Lead)], ['query']),
   'getAllPosts' : IDL.Func([], [IDL.Vec(Post)], ['query']),
+  'getAllTestimonials' : IDL.Func([], [IDL.Vec(Testimonial)], ['query']),
   'getPostById' : IDL.Func([IDL.Nat], [IDL.Opt(Post)], ['query']),
   'submitLead' : IDL.Func([IDL.Text, IDL.Text, IDL.Text], [IDL.Nat], []),
 });
@@ -55,6 +70,14 @@ export const idlFactory = ({ IDL }) => {
     'excerpt' : IDL.Text,
     'category' : IDL.Text,
   });
+  const Testimonial = IDL.Record({
+    'id' : IDL.Nat,
+    'clientName' : IDL.Text,
+    'createdAt' : IDL.Int,
+    'reviewText' : IDL.Text,
+    'rating' : IDL.Nat,
+    'clientTitle' : IDL.Text,
+  });
   
   return IDL.Service({
     'createPost' : IDL.Func(
@@ -62,9 +85,16 @@ export const idlFactory = ({ IDL }) => {
         [IDL.Nat],
         [],
       ),
+    'createTestimonial' : IDL.Func(
+        [IDL.Text, IDL.Text, IDL.Text, IDL.Nat],
+        [IDL.Nat],
+        [],
+      ),
     'deletePost' : IDL.Func([IDL.Nat], [IDL.Bool], []),
+    'deleteTestimonial' : IDL.Func([IDL.Nat], [IDL.Bool], []),
     'getAllLeads' : IDL.Func([], [IDL.Vec(Lead)], ['query']),
     'getAllPosts' : IDL.Func([], [IDL.Vec(Post)], ['query']),
+    'getAllTestimonials' : IDL.Func([], [IDL.Vec(Testimonial)], ['query']),
     'getPostById' : IDL.Func([IDL.Nat], [IDL.Opt(Post)], ['query']),
     'submitLead' : IDL.Func([IDL.Text, IDL.Text, IDL.Text], [IDL.Nat], []),
   });

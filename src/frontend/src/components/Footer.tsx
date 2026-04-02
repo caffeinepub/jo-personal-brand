@@ -34,7 +34,7 @@ export default function Footer({ onLogoClick }: FooterProps) {
               <img
                 src="/assets/job_saji_digital_marketing_logo-019d4e9d-70c3-73b3-834e-5cb8490a3af0.png"
                 alt="Job JS logo"
-                className="h-10 w-auto"
+                className="h-24 w-auto"
               />
             </button>
             <p

@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import type { Lead, Post } from "../backend.d";
+import type { Lead, Post, Testimonial } from "../backend.d";
 import { useActor } from "./useActor";
 
 export function useGetAllPosts() {
@@ -71,5 +71,56 @@ export function useDeletePost() {
       return actor.deletePost(id);
     },
     onSuccess: () => qc.invalidateQueries({ queryKey: ["posts"] }),
+  });
+}
+
+export function useGetAllTestimonials() {
+  const { actor, isFetching } = useActor();
+  return useQuery<Testimonial[]>({
+    queryKey: ["testimonials"],
+    queryFn: async () => {
+      if (!actor) return [];
+      return actor.getAllTestimonials();
+    },
+    enabled: !!actor && !isFetching,
+  });
+}
+
+export function useCreateTestimonial() {
+  const { actor } = useActor();
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async ({
+      clientName,
+      clientTitle,
+      reviewText,
+      rating,
+    }: {
+      clientName: string;
+      clientTitle: string;
+      reviewText: string;
+      rating: bigint;
+    }) => {
+      if (!actor) throw new Error("Not connected");
+      return actor.createTestimonial(
+        clientName,
+        clientTitle,
+        reviewText,
+        rating,
+      );
+    },
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["testimonials"] }),
+  });
+}
+
+export function useDeleteTestimonial() {
+  const { actor } = useActor();
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (id: bigint) => {
+      if (!actor) throw new Error("Not connected");
+      return actor.deleteTestimonial(id);
+    },
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["testimonials"] }),
   });
 }

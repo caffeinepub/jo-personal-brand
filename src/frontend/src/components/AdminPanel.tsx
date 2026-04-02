@@ -12,14 +12,17 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
-import { Loader2, Plus, Trash2 } from "lucide-react";
+import { Loader2, Plus, Star, Trash2 } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 import {
   useCreatePost,
+  useCreateTestimonial,
   useDeletePost,
+  useDeleteTestimonial,
   useGetAllLeads,
   useGetAllPosts,
+  useGetAllTestimonials,
 } from "../hooks/useQueries";
 
 interface AdminPanelProps {
@@ -274,6 +277,240 @@ function LeadsTab() {
   );
 }
 
+function StarPicker({
+  value,
+  onChange,
+}: { value: number; onChange: (v: number) => void }) {
+  const [hovered, setHovered] = useState(0);
+  return (
+    <fieldset className="flex items-center gap-1" aria-label="Select rating">
+      {[1, 2, 3, 4, 5].map((star) => (
+        <button
+          key={star}
+          type="button"
+          data-ocid="admin.toggle"
+          aria-label={`Rate ${star} star${star > 1 ? "s" : ""}`}
+          onMouseEnter={() => setHovered(star)}
+          onMouseLeave={() => setHovered(0)}
+          onClick={() => onChange(star)}
+          className="p-0.5 transition-transform hover:scale-110"
+        >
+          <Star
+            size={20}
+            className={
+              star <= (hovered || value)
+                ? "fill-primary text-primary"
+                : "fill-muted text-muted-foreground/30"
+            }
+          />
+        </button>
+      ))}
+    </fieldset>
+  );
+}
+
+function TestimonialsTab() {
+  const { data: testimonials, isLoading } = useGetAllTestimonials();
+  const { mutateAsync: createTestimonial, isPending: isCreating } =
+    useCreateTestimonial();
+  const { mutateAsync: deleteTestimonial, isPending: isDeleting } =
+    useDeleteTestimonial();
+
+  const [showForm, setShowForm] = useState(false);
+  const [clientName, setClientName] = useState("");
+  const [clientTitle, setClientTitle] = useState("");
+  const [reviewText, setReviewText] = useState("");
+  const [rating, setRating] = useState(5);
+
+  const handleCreate = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!clientName.trim() || !reviewText.trim()) {
+      toast.error("Client name and review are required.");
+      return;
+    }
+    try {
+      await createTestimonial({
+        clientName,
+        clientTitle,
+        reviewText,
+        rating: BigInt(rating),
+      });
+      toast.success("Testimonial added!");
+      setClientName("");
+      setClientTitle("");
+      setReviewText("");
+      setRating(5);
+      setShowForm(false);
+    } catch {
+      toast.error("Failed to add testimonial.");
+    }
+  };
+
+  const handleDelete = async (id: bigint) => {
+    try {
+      await deleteTestimonial(id);
+      toast.success("Testimonial deleted.");
+    } catch {
+      toast.error("Failed to delete testimonial.");
+    }
+  };
+
+  return (
+    <div className="space-y-5">
+      <div className="flex items-center justify-between">
+        <h3 className="font-display text-lg font-semibold">Testimonials</h3>
+        <Button
+          size="sm"
+          data-ocid="admin.open_modal_button"
+          onClick={() => setShowForm((v) => !v)}
+          className="bg-primary text-primary-foreground hover:bg-primary/90 rounded-full gap-1.5"
+        >
+          <Plus size={14} />
+          New Testimonial
+        </Button>
+      </div>
+
+      {showForm && (
+        <form
+          onSubmit={handleCreate}
+          data-ocid="admin.panel"
+          className="bg-muted/40 rounded-xl p-5 space-y-4 border border-border"
+        >
+          <h4 className="font-medium text-sm">New Testimonial</h4>
+          <div className="space-y-1.5">
+            <Label htmlFor="t-client-name">Client Name *</Label>
+            <Input
+              id="t-client-name"
+              data-ocid="admin.input"
+              value={clientName}
+              onChange={(e) => setClientName(e.target.value)}
+              placeholder="e.g. Riya Sharma"
+              required
+            />
+          </div>
+          <div className="space-y-1.5">
+            <Label htmlFor="t-client-title">Client Title / Company</Label>
+            <Input
+              id="t-client-title"
+              data-ocid="admin.input"
+              value={clientTitle}
+              onChange={(e) => setClientTitle(e.target.value)}
+              placeholder="e.g. CEO, Acme Corp"
+            />
+          </div>
+          <div className="space-y-1.5">
+            <Label htmlFor="t-review">Review *</Label>
+            <Textarea
+              id="t-review"
+              data-ocid="admin.textarea"
+              value={reviewText}
+              onChange={(e) => setReviewText(e.target.value)}
+              placeholder="What did they say about working with you?"
+              rows={4}
+              required
+            />
+          </div>
+          <div className="space-y-1.5">
+            <Label>Rating</Label>
+            <StarPicker value={rating} onChange={setRating} />
+          </div>
+          <div className="flex gap-3">
+            <Button
+              type="submit"
+              data-ocid="admin.submit_button"
+              disabled={isCreating}
+              className="bg-primary text-primary-foreground hover:bg-primary/90 rounded-full flex-1"
+            >
+              {isCreating ? (
+                <>
+                  <Loader2 size={14} className="animate-spin mr-1" />
+                  Saving...
+                </>
+              ) : (
+                "Add Testimonial"
+              )}
+            </Button>
+            <Button
+              type="button"
+              variant="outline"
+              data-ocid="admin.cancel_button"
+              onClick={() => setShowForm(false)}
+              className="rounded-full"
+            >
+              Cancel
+            </Button>
+          </div>
+        </form>
+      )}
+
+      {isLoading && (
+        <div data-ocid="admin.loading_state" className="space-y-3">
+          {[1, 2].map((n) => (
+            <Skeleton key={n} className="h-20 w-full rounded-xl" />
+          ))}
+        </div>
+      )}
+
+      {!isLoading && (!testimonials || testimonials.length === 0) && (
+        <div
+          data-ocid="admin.empty_state"
+          className="text-center py-8 text-muted-foreground text-sm"
+        >
+          No testimonials yet. Add your first client review above.
+        </div>
+      )}
+
+      {!isLoading && testimonials && testimonials.length > 0 && (
+        <div className="space-y-3">
+          {testimonials.map((t, i) => (
+            <div
+              key={String(t.id)}
+              data-ocid={`admin.item.${i + 1}`}
+              className="flex items-start justify-between gap-3 bg-card rounded-xl p-4 border border-border"
+            >
+              <div className="min-w-0 space-y-1">
+                <p className="font-medium text-sm truncate">{t.clientName}</p>
+                {t.clientTitle && (
+                  <p className="text-xs text-muted-foreground">
+                    {t.clientTitle}
+                  </p>
+                )}
+                <div className="flex gap-0.5">
+                  {[1, 2, 3, 4, 5].map((s) => (
+                    <Star
+                      key={s}
+                      size={11}
+                      className={
+                        s <= Number(t.rating)
+                          ? "fill-primary text-primary"
+                          : "fill-muted text-muted-foreground/30"
+                      }
+                    />
+                  ))}
+                </div>
+                <p className="text-xs text-muted-foreground line-clamp-2">
+                  {t.reviewText}
+                </p>
+              </div>
+              <Button
+                size="icon"
+                variant="ghost"
+                data-ocid={`admin.delete_button.${i + 1}`}
+                disabled={isDeleting}
+                onClick={() => handleDelete(t.id)}
+                className="text-destructive hover:text-destructive hover:bg-destructive/10 flex-shrink-0"
+                aria-label="Delete testimonial"
+              >
+                <Trash2 size={15} />
+              </Button>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
 export default function AdminPanel({ open, onClose }: AdminPanelProps) {
   return (
     <Dialog open={open} onOpenChange={(o) => !o && onClose()}>
@@ -284,12 +521,27 @@ export default function AdminPanel({ open, onClose }: AdminPanelProps) {
           </DialogTitle>
         </DialogHeader>
         <Tabs defaultValue="blog">
-          <TabsList className="w-full mb-4">
-            <TabsTrigger value="blog" data-ocid="admin.tab" className="flex-1">
-              Blog Posts
+          <TabsList className="w-full mb-4 grid grid-cols-3">
+            <TabsTrigger
+              value="blog"
+              data-ocid="admin.tab"
+              className="text-xs sm:text-sm"
+            >
+              Blog
             </TabsTrigger>
-            <TabsTrigger value="leads" data-ocid="admin.tab" className="flex-1">
+            <TabsTrigger
+              value="leads"
+              data-ocid="admin.tab"
+              className="text-xs sm:text-sm"
+            >
               Leads
+            </TabsTrigger>
+            <TabsTrigger
+              value="testimonials"
+              data-ocid="admin.tab"
+              className="text-xs sm:text-sm"
+            >
+              Reviews
             </TabsTrigger>
           </TabsList>
           <ScrollArea className="max-h-[60vh]">
@@ -298,6 +550,9 @@ export default function AdminPanel({ open, onClose }: AdminPanelProps) {
             </TabsContent>
             <TabsContent value="leads" className="mt-0 px-0.5 pb-2">
               <LeadsTab />
+            </TabsContent>
+            <TabsContent value="testimonials" className="mt-0 px-0.5 pb-2">
+              <TestimonialsTab />
             </TabsContent>
           </ScrollArea>
         </Tabs>

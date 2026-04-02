@@ -25,11 +25,22 @@ export interface Post {
   'excerpt' : string,
   'category' : string,
 }
+export interface Testimonial {
+  'id' : bigint,
+  'clientName' : string,
+  'createdAt' : bigint,
+  'reviewText' : string,
+  'rating' : bigint,
+  'clientTitle' : string,
+}
 export interface _SERVICE {
   'createPost' : ActorMethod<[string, string, string, string], bigint>,
+  'createTestimonial' : ActorMethod<[string, string, string, bigint], bigint>,
   'deletePost' : ActorMethod<[bigint], boolean>,
+  'deleteTestimonial' : ActorMethod<[bigint], boolean>,
   'getAllLeads' : ActorMethod<[], Array<Lead>>,
   'getAllPosts' : ActorMethod<[], Array<Post>>,
+  'getAllTestimonials' : ActorMethod<[], Array<Testimonial>>,
   'getPostById' : ActorMethod<[bigint], [] | [Post]>,
   'submitLead' : ActorMethod<[string, string, string], bigint>,
 }

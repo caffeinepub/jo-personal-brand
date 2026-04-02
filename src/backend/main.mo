@@ -1,12 +1,12 @@
-import Map "mo:core/Map";
 import Array "mo:core/Array";
 import Int "mo:core/Int";
-import Time "mo:core/Time";
 import Iter "mo:core/Iter";
+import Map "mo:core/Map";
+import Migration "migration"; // Import migration module
 import Nat "mo:core/Nat";
+import Time "mo:core/Time";
 
-
-
+(with migration = Migration.run)
 actor {
   public type Post = {
     id : Nat;
@@ -25,10 +25,21 @@ actor {
     timestamp : Int;
   };
 
+  public type Testimonial = {
+    id : Nat;
+    clientName : Text;
+    clientTitle : Text;
+    reviewText : Text;
+    rating : Nat;
+    createdAt : Int;
+  };
+
   let posts = Map.empty<Nat, Post>();
   let leads = Map.empty<Nat, Lead>();
+  let testimonials = Map.empty<Nat, Testimonial>();
   var nextPostId = 1;
   var nextLeadId = 1;
+  var nextTestimonialId = 1;
 
   public shared ({ caller }) func createPost(title : Text, content : Text, category : Text, excerpt : Text) : async Nat {
     let post : Post = {
@@ -81,5 +92,34 @@ actor {
         Nat.compare(b.id, a.id);
       }
     );
+  };
+
+  // Testimonials feature
+  public shared ({ caller }) func createTestimonial(clientName : Text, clientTitle : Text, reviewText : Text, rating : Nat) : async Nat {
+    let testimonial : Testimonial = {
+      id = nextTestimonialId;
+      clientName;
+      clientTitle;
+      reviewText;
+      rating;
+      createdAt = Time.now();
+    };
+    testimonials.add(nextTestimonialId, testimonial);
+    nextTestimonialId += 1;
+    testimonial.id;
+  };
+
+  public query ({ caller }) func getAllTestimonials() : async [Testimonial] {
+    testimonials.values().toArray().sort(
+      func(a, b) {
+        Int.compare(b.createdAt, a.createdAt);
+      }
+    );
+  };
+
+  public shared ({ caller }) func deleteTestimonial(id : Nat) : async Bool {
+    let existed = testimonials.containsKey(id);
+    testimonials.remove(id);
+    existed;
   };
 };
