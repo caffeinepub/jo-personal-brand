@@ -41,10 +41,14 @@ export default function Navbar({ onLogoClick }: NavbarProps) {
           type="button"
           onClick={onLogoClick}
           data-ocid="nav.link"
-          className="font-display text-xl font-semibold text-foreground select-none cursor-pointer hover:text-primary transition-colors"
+          className="select-none cursor-pointer hover:opacity-80 transition-opacity"
           aria-label="Job JS logo"
         >
-          Job JS.
+          <img
+            src="/assets/job_saji_digital_marketing_logo-019d4e9d-70c3-73b3-834e-5cb8490a3af0.png"
+            alt="Job JS logo"
+            className="h-14 w-auto"
+          />
         </button>
 
         {/* Desktop links */}
