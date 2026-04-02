@@ -319,6 +319,7 @@ function TestimonialsTab() {
   const [showForm, setShowForm] = useState(false);
   const [clientName, setClientName] = useState("");
   const [clientTitle, setClientTitle] = useState("");
+  const [photoUrl, setPhotoUrl] = useState("");
   const [reviewText, setReviewText] = useState("");
   const [rating, setRating] = useState(5);
 
@@ -332,12 +333,14 @@ function TestimonialsTab() {
       await createTestimonial({
         clientName,
         clientTitle,
+        photoUrl,
         reviewText,
         rating: BigInt(rating),
       });
       toast.success("Testimonial added!");
       setClientName("");
       setClientTitle("");
+      setPhotoUrl("");
       setReviewText("");
       setRating(5);
       setShowForm(false);
@@ -378,25 +381,40 @@ function TestimonialsTab() {
         >
           <h4 className="font-medium text-sm">New Testimonial</h4>
           <div className="space-y-1.5">
-            <Label htmlFor="t-client-name">Client Name *</Label>
+            <Label htmlFor="t-client-name">Business / Client Name *</Label>
             <Input
               id="t-client-name"
               data-ocid="admin.input"
               value={clientName}
               onChange={(e) => setClientName(e.target.value)}
-              placeholder="e.g. Riya Sharma"
+              placeholder="e.g. Riya Sharma or Acme Corp"
               required
             />
           </div>
           <div className="space-y-1.5">
-            <Label htmlFor="t-client-title">Client Title / Company</Label>
+            <Label htmlFor="t-client-title">Role / Tagline</Label>
             <Input
               id="t-client-title"
               data-ocid="admin.input"
               value={clientTitle}
               onChange={(e) => setClientTitle(e.target.value)}
-              placeholder="e.g. CEO, Acme Corp"
+              placeholder="e.g. CEO, Acme Corp or Digital Startup"
             />
+          </div>
+          <div className="space-y-1.5">
+            <Label htmlFor="t-photo-url">Photo / Logo URL</Label>
+            <Input
+              id="t-photo-url"
+              data-ocid="admin.input"
+              type="url"
+              value={photoUrl}
+              onChange={(e) => setPhotoUrl(e.target.value)}
+              placeholder="https://example.com/photo.jpg (optional)"
+            />
+            <p className="text-xs text-muted-foreground">
+              Paste a direct link to the person's photo or company logo. If left
+              blank, initials will be shown.
+            </p>
           </div>
           <div className="space-y-1.5">
             <Label htmlFor="t-review">Review *</Label>
@@ -468,29 +486,41 @@ function TestimonialsTab() {
               data-ocid={`admin.item.${i + 1}`}
               className="flex items-start justify-between gap-3 bg-card rounded-xl p-4 border border-border"
             >
-              <div className="min-w-0 space-y-1">
-                <p className="font-medium text-sm truncate">{t.clientName}</p>
-                {t.clientTitle && (
-                  <p className="text-xs text-muted-foreground">
-                    {t.clientTitle}
-                  </p>
+              <div className="flex items-center gap-3 min-w-0">
+                {t.photoUrl ? (
+                  <img
+                    src={t.photoUrl}
+                    alt={t.clientName}
+                    className="w-9 h-9 rounded-full object-cover border border-border flex-shrink-0"
+                  />
+                ) : (
+                  <div className="w-9 h-9 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
+                    <span className="text-primary font-display font-semibold text-sm">
+                      {t.clientName.charAt(0).toUpperCase()}
+                    </span>
+                  </div>
                 )}
-                <div className="flex gap-0.5">
-                  {[1, 2, 3, 4, 5].map((s) => (
-                    <Star
-                      key={s}
-                      size={11}
-                      className={
-                        s <= Number(t.rating)
-                          ? "fill-primary text-primary"
-                          : "fill-muted text-muted-foreground/30"
-                      }
-                    />
-                  ))}
+                <div className="min-w-0 space-y-0.5">
+                  <p className="font-medium text-sm truncate">{t.clientName}</p>
+                  {t.clientTitle && (
+                    <p className="text-xs text-muted-foreground">
+                      {t.clientTitle}
+                    </p>
+                  )}
+                  <div className="flex gap-0.5">
+                    {[1, 2, 3, 4, 5].map((s) => (
+                      <Star
+                        key={s}
+                        size={11}
+                        className={
+                          s <= Number(t.rating)
+                            ? "fill-primary text-primary"
+                            : "fill-muted text-muted-foreground/30"
+                        }
+                      />
+                    ))}
+                  </div>
                 </div>
-                <p className="text-xs text-muted-foreground line-clamp-2">
-                  {t.reviewText}
-                </p>
               </div>
               <Button
                 size="icon"

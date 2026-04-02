@@ -25,14 +25,15 @@ export interface Post {
 export interface Testimonial {
     id: bigint;
     clientName: string;
+    clientTitle: string;
+    photoUrl: string;
     createdAt: bigint;
     reviewText: string;
     rating: bigint;
-    clientTitle: string;
 }
 export interface backendInterface {
     createPost(title: string, content: string, category: string, excerpt: string): Promise<bigint>;
-    createTestimonial(clientName: string, clientTitle: string, reviewText: string, rating: bigint): Promise<bigint>;
+    createTestimonial(clientName: string, clientTitle: string, photoUrl: string, reviewText: string, rating: bigint): Promise<bigint>;
     deletePost(id: bigint): Promise<boolean>;
     deleteTestimonial(id: bigint): Promise<boolean>;
     getAllLeads(): Promise<Array<Lead>>;

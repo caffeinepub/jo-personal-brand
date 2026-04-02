@@ -38,41 +38,62 @@ function TestimonialCard({
       viewport={{ once: true }}
       transition={{ duration: 0.55, delay: index * 0.1 }}
       data-ocid={`testimonials.item.${index + 1}`}
-      className="bg-card border border-border rounded-card p-7 hover:shadow-card-hover transition-all flex flex-col gap-5 relative overflow-hidden group"
+      className="bg-card border border-border rounded-card overflow-hidden hover:shadow-card-hover transition-all flex flex-col group"
     >
-      {/* Decorative large quote mark */}
-      <span
-        className="absolute top-4 right-5 font-display text-7xl leading-none text-primary/10 select-none pointer-events-none group-hover:text-primary/15 transition-colors"
-        aria-hidden="true"
-      >
-        &#8220;
-      </span>
-
-      <StarRating rating={rating} />
-
-      <blockquote className="relative text-foreground/80 text-sm leading-relaxed font-body italic flex-1">
-        &ldquo;{testimonial.reviewText}&rdquo;
-      </blockquote>
-
-      <div className="flex items-center gap-3 pt-2 border-t border-border">
-        <div
-          className="w-9 h-9 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0"
+      {/* Top: Photo + Business Name */}
+      <div className="flex flex-col items-center pt-8 pb-5 px-6 border-b border-border bg-muted/30 relative">
+        {/* Decorative quote mark */}
+        <span
+          className="absolute top-3 right-4 font-display text-6xl leading-none text-primary/10 select-none pointer-events-none group-hover:text-primary/15 transition-colors"
           aria-hidden="true"
         >
-          <span className="text-primary font-display font-semibold text-sm">
+          &#8220;
+        </span>
+
+        {/* Photo / Logo */}
+        {testimonial.photoUrl ? (
+          <img
+            src={testimonial.photoUrl}
+            alt={testimonial.clientName}
+            className="w-16 h-16 rounded-full object-cover border-2 border-primary/20 shadow-sm mb-3"
+            onError={(e) => {
+              // Fallback to initials if image fails
+              (e.currentTarget as HTMLImageElement).style.display = "none";
+              const fallback = e.currentTarget
+                .nextElementSibling as HTMLElement;
+              if (fallback) fallback.style.display = "flex";
+            }}
+          />
+        ) : null}
+        {/* Initials fallback (shown when no photo or image fails) */}
+        <div
+          className={`w-16 h-16 rounded-full bg-primary/10 items-center justify-center flex-shrink-0 mb-3 ${
+            testimonial.photoUrl ? "hidden" : "flex"
+          }`}
+          aria-hidden={!!testimonial.photoUrl}
+        >
+          <span className="text-primary font-display font-bold text-xl">
             {testimonial.clientName.charAt(0).toUpperCase()}
           </span>
         </div>
-        <div>
-          <p className="font-display font-semibold text-sm text-foreground leading-tight">
-            {testimonial.clientName}
+
+        {/* Business Name (headline) */}
+        <h3 className="font-display font-semibold text-base text-foreground text-center leading-snug">
+          {testimonial.clientName}
+        </h3>
+        {testimonial.clientTitle && (
+          <p className="text-xs text-muted-foreground mt-0.5 text-center">
+            {testimonial.clientTitle}
           </p>
-          {testimonial.clientTitle && (
-            <p className="text-xs text-muted-foreground mt-0.5">
-              {testimonial.clientTitle}
-            </p>
-          )}
-        </div>
+        )}
+      </div>
+
+      {/* Bottom: Star rating + Review */}
+      <div className="flex flex-col flex-1 gap-3 p-6">
+        <StarRating rating={rating} />
+        <blockquote className="text-foreground/80 text-sm leading-relaxed font-body italic flex-1">
+          &ldquo;{testimonial.reviewText}&rdquo;
+        </blockquote>
       </div>
     </motion.div>
   );
@@ -107,18 +128,18 @@ export default function Testimonials() {
             {[1, 2, 3].map((n) => (
               <div
                 key={n}
-                className="bg-card border border-border rounded-card p-7 space-y-4"
+                className="bg-card border border-border rounded-card overflow-hidden"
               >
-                <Skeleton className="h-4 w-20" />
-                <Skeleton className="h-4 w-full" />
-                <Skeleton className="h-4 w-full" />
-                <Skeleton className="h-4 w-3/4" />
-                <div className="flex items-center gap-3 pt-2">
-                  <Skeleton className="h-9 w-9 rounded-full" />
-                  <div className="space-y-1.5">
-                    <Skeleton className="h-3.5 w-28" />
-                    <Skeleton className="h-3 w-20" />
-                  </div>
+                <div className="flex flex-col items-center pt-8 pb-5 px-6 border-b border-border bg-muted/30 space-y-2">
+                  <Skeleton className="w-16 h-16 rounded-full" />
+                  <Skeleton className="h-4 w-28" />
+                  <Skeleton className="h-3 w-20" />
+                </div>
+                <div className="p-6 space-y-3">
+                  <Skeleton className="h-3.5 w-20" />
+                  <Skeleton className="h-4 w-full" />
+                  <Skeleton className="h-4 w-full" />
+                  <Skeleton className="h-4 w-3/4" />
                 </div>
               </div>
             ))}

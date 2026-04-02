@@ -107,14 +107,15 @@ export interface Post {
 export interface Testimonial {
     id: bigint;
     clientName: string;
+    clientTitle: string;
+    photoUrl: string;
     createdAt: bigint;
     reviewText: string;
     rating: bigint;
-    clientTitle: string;
 }
 export interface backendInterface {
     createPost(title: string, content: string, category: string, excerpt: string): Promise<bigint>;
-    createTestimonial(clientName: string, clientTitle: string, reviewText: string, rating: bigint): Promise<bigint>;
+    createTestimonial(clientName: string, clientTitle: string, photoUrl: string, reviewText: string, rating: bigint): Promise<bigint>;
     deletePost(id: bigint): Promise<boolean>;
     deleteTestimonial(id: bigint): Promise<boolean>;
     getAllLeads(): Promise<Array<Lead>>;
@@ -140,17 +141,17 @@ export class Backend implements backendInterface {
             return result;
         }
     }
-    async createTestimonial(arg0: string, arg1: string, arg2: string, arg3: bigint): Promise<bigint> {
+    async createTestimonial(arg0: string, arg1: string, arg2: string, arg3: string, arg4: bigint): Promise<bigint> {
         if (this.processError) {
             try {
-                const result = await this.actor.createTestimonial(arg0, arg1, arg2, arg3);
+                const result = await this.actor.createTestimonial(arg0, arg1, arg2, arg3, arg4);
                 return result;
             } catch (e) {
                 this.processError(e);
                 throw new Error("unreachable");
             }
         } else {
-            const result = await this.actor.createTestimonial(arg0, arg1, arg2, arg3);
+            const result = await this.actor.createTestimonial(arg0, arg1, arg2, arg3, arg4);
             return result;
         }
     }

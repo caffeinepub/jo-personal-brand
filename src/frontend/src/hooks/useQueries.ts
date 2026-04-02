@@ -93,11 +93,13 @@ export function useCreateTestimonial() {
     mutationFn: async ({
       clientName,
       clientTitle,
+      photoUrl,
       reviewText,
       rating,
     }: {
       clientName: string;
       clientTitle: string;
+      photoUrl: string;
       reviewText: string;
       rating: bigint;
     }) => {
@@ -105,6 +107,7 @@ export function useCreateTestimonial() {
       return actor.createTestimonial(
         clientName,
         clientTitle,
+        photoUrl,
         reviewText,
         rating,
       );
