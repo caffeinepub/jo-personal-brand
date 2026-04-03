@@ -26,10 +26,11 @@ export const Post = IDL.Record({
 export const Testimonial = IDL.Record({
   'id' : IDL.Nat,
   'clientName' : IDL.Text,
+  'clientTitle' : IDL.Text,
+  'photoUrl' : IDL.Text,
   'createdAt' : IDL.Int,
   'reviewText' : IDL.Text,
   'rating' : IDL.Nat,
-  'clientTitle' : IDL.Text,
 });
 
 export const idlService = IDL.Service({
@@ -39,7 +40,7 @@ export const idlService = IDL.Service({
       [],
     ),
   'createTestimonial' : IDL.Func(
-      [IDL.Text, IDL.Text, IDL.Text, IDL.Nat],
+      [IDL.Text, IDL.Text, IDL.Text, IDL.Text, IDL.Nat],
       [IDL.Nat],
       [],
     ),
@@ -73,10 +74,11 @@ export const idlFactory = ({ IDL }) => {
   const Testimonial = IDL.Record({
     'id' : IDL.Nat,
     'clientName' : IDL.Text,
+    'clientTitle' : IDL.Text,
+    'photoUrl' : IDL.Text,
     'createdAt' : IDL.Int,
     'reviewText' : IDL.Text,
     'rating' : IDL.Nat,
-    'clientTitle' : IDL.Text,
   });
   
   return IDL.Service({
@@ -86,7 +88,7 @@ export const idlFactory = ({ IDL }) => {
         [],
       ),
     'createTestimonial' : IDL.Func(
-        [IDL.Text, IDL.Text, IDL.Text, IDL.Nat],
+        [IDL.Text, IDL.Text, IDL.Text, IDL.Text, IDL.Nat],
         [IDL.Nat],
         [],
       ),
