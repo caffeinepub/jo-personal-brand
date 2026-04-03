@@ -1,4 +1,5 @@
 import { Button } from "@/components/ui/button";
+import { Link } from "@tanstack/react-router";
 import { Menu, X } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
 import { useEffect, useState } from "react";
@@ -9,13 +10,13 @@ interface NavbarProps {
 }
 
 const NAV_LINKS = [
-  { label: "About", href: "#about" },
-  { label: "What I Do", href: "#what-i-do" },
-  { label: "Vision", href: "#vision" },
-  { label: "Work", href: "#work" },
-  { label: "Testimonials", href: "#testimonials" },
-  { label: "Blog", href: "#blog" },
-  { label: "Contact", href: "#contact" },
+  { label: "About", href: "/about" },
+  { label: "What I Do", href: "/what-i-do" },
+  { label: "Vision", href: "/vision" },
+  { label: "Work", href: "/work" },
+  { label: "Testimonials", href: "/testimonials" },
+  { label: "Blog", href: "/blog" },
+  { label: "Contact", href: "/contact" },
 ];
 
 export default function Navbar({ onLogoClick }: NavbarProps) {
@@ -55,14 +56,15 @@ export default function Navbar({ onLogoClick }: NavbarProps) {
         {/* Desktop links */}
         <div className="hidden md:flex items-center gap-6">
           {NAV_LINKS.map((link) => (
-            <a
+            <Link
               key={link.href}
-              href={link.href}
+              to={link.href}
               data-ocid="nav.link"
               className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
+              activeProps={{ className: "text-sm font-medium text-primary" }}
             >
               {link.label}
-            </a>
+            </Link>
           ))}
           <a
             href="https://www.linkedin.com/in/jobsaji/"
@@ -84,16 +86,15 @@ export default function Navbar({ onLogoClick }: NavbarProps) {
           >
             <SiFacebook size={18} />
           </a>
-          <Button
-            size="sm"
-            data-ocid="nav.primary_button"
-            className="bg-primary text-primary-foreground hover:bg-primary/90 rounded-full px-5"
-            onClick={() => {
-              window.location.hash = "contact";
-            }}
-          >
-            Work With Me
-          </Button>
+          <Link to="/contact">
+            <Button
+              size="sm"
+              data-ocid="nav.primary_button"
+              className="bg-primary text-primary-foreground hover:bg-primary/90 rounded-full px-5"
+            >
+              Work With Me
+            </Button>
+          </Link>
         </div>
 
         {/* Mobile hamburger */}
@@ -118,15 +119,18 @@ export default function Navbar({ onLogoClick }: NavbarProps) {
             className="md:hidden bg-background/95 backdrop-blur-md border-b border-border px-6 py-4 flex flex-col gap-4"
           >
             {NAV_LINKS.map((link) => (
-              <a
+              <Link
                 key={link.href}
-                href={link.href}
+                to={link.href}
                 data-ocid="nav.link"
                 className="text-base font-medium text-foreground hover:text-primary transition-colors"
+                activeProps={{
+                  className: "text-base font-medium text-primary",
+                }}
                 onClick={() => setMenuOpen(false)}
               >
                 {link.label}
-              </a>
+              </Link>
             ))}
             <a
               href="https://www.linkedin.com/in/jobsaji/"
@@ -150,16 +154,14 @@ export default function Navbar({ onLogoClick }: NavbarProps) {
               <SiFacebook size={18} />
               Facebook
             </a>
-            <Button
-              data-ocid="nav.primary_button"
-              className="bg-primary text-primary-foreground hover:bg-primary/90 rounded-full w-full"
-              onClick={() => {
-                setMenuOpen(false);
-                window.location.hash = "contact";
-              }}
-            >
-              Work With Me
-            </Button>
+            <Link to="/contact" onClick={() => setMenuOpen(false)}>
+              <Button
+                data-ocid="nav.primary_button"
+                className="bg-primary text-primary-foreground hover:bg-primary/90 rounded-full w-full"
+              >
+                Work With Me
+              </Button>
+            </Link>
           </motion.div>
         )}
       </AnimatePresence>

@@ -1,3 +1,4 @@
+import { Link } from "@tanstack/react-router";
 import { SiFacebook, SiLinkedin } from "react-icons/si";
 
 interface FooterProps {
@@ -5,12 +6,13 @@ interface FooterProps {
 }
 
 const NAV_LINKS = [
-  { label: "About", href: "#about" },
-  { label: "What I Do", href: "#what-i-do" },
-  { label: "Vision", href: "#vision" },
-  { label: "Work", href: "#work" },
-  { label: "Blog", href: "#blog" },
-  { label: "Contact", href: "#contact" },
+  { label: "About", href: "/about" },
+  { label: "What I Do", href: "/what-i-do" },
+  { label: "Vision", href: "/vision" },
+  { label: "Work", href: "/work" },
+  { label: "Testimonials", href: "/testimonials" },
+  { label: "Blog", href: "/blog" },
+  { label: "Contact", href: "/contact" },
 ];
 
 export default function Footer({ onLogoClick }: FooterProps) {
@@ -82,14 +84,14 @@ export default function Footer({ onLogoClick }: FooterProps) {
             <ul className="space-y-2">
               {NAV_LINKS.map((link) => (
                 <li key={link.href}>
-                  <a
-                    href={link.href}
+                  <Link
+                    to={link.href}
                     data-ocid="footer.link"
                     className="text-sm transition-colors hover:opacity-100"
                     style={{ color: "oklch(0.72 0.02 55)" }}
                   >
                     {link.label}
-                  </a>
+                  </Link>
                 </li>
               ))}
             </ul>

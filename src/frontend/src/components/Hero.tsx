@@ -1,4 +1,5 @@
 import { Button } from "@/components/ui/button";
+import { Link } from "@tanstack/react-router";
 import { motion } from "motion/react";
 
 export default function Hero() {
@@ -60,7 +61,7 @@ export default function Hero() {
               data-ocid="hero.primary_button"
               className="bg-primary text-primary-foreground hover:bg-primary/90 rounded-full px-8 text-base shadow-lg"
             >
-              <a href="#about">Explore →</a>
+              <Link to="/about">Explore →</Link>
             </Button>
             <Button
               asChild
@@ -69,7 +70,7 @@ export default function Hero() {
               data-ocid="hero.secondary_button"
               className="rounded-full px-8 text-base border-foreground/30 hover:bg-foreground/5"
             >
-              <a href="#contact">Work With Me</a>
+              <Link to="/contact">Work With Me</Link>
             </Button>
           </motion.div>
         </motion.div>
