@@ -13,7 +13,13 @@ export default function Hero() {
       <div className="hero-blob-2" aria-hidden="true" />
       <div className="hero-blob-3" aria-hidden="true" />
 
-      <div className="relative z-10 max-w-7xl mx-auto px-6 md:px-12 lg:px-20 pt-24 pb-16">
+      {/* Navbar offset spacer — navbar is h-28 (112px) */}
+      <div
+        className="absolute inset-0 flex items-center pointer-events-none"
+        aria-hidden="true"
+      />
+
+      <div className="relative z-10 w-full max-w-7xl mx-auto px-6 md:px-12 lg:px-20 pt-32 pb-20 md:pt-40 md:pb-24">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
@@ -33,7 +39,7 @@ export default function Hero() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3, duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
-            className="font-display text-5xl md:text-6xl lg:text-7xl font-semibold leading-tight text-foreground mb-6"
+            className="font-display text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-semibold leading-tight text-foreground mb-6"
           >
             Building a Lifestyle Brand{" "}
             <span className="text-primary italic">with a Digital</span> Mindset
@@ -43,7 +49,7 @@ export default function Hero() {
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.5, duration: 0.7 }}
-            className="text-lg md:text-xl text-muted-foreground leading-relaxed mb-10 max-w-xl"
+            className="text-base md:text-lg lg:text-xl text-muted-foreground leading-relaxed mb-10 max-w-xl"
           >
             Sharing ideas on lifestyle, creativity, and modern marketing.
             Content, projects, and collaborations — all in one place.
