@@ -6,18 +6,18 @@ export default function Vision() {
     <section
       id="vision"
       className="section-padding relative overflow-hidden"
-      style={{ background: "oklch(0.26 0.03 48)" }}
+      style={{ background: "oklch(0.18 0.06 255)" }}
     >
       {/* Decorative blob */}
       <div
         aria-hidden="true"
-        className="absolute -top-20 -right-20 w-80 h-80 rounded-full opacity-10"
-        style={{ background: "oklch(0.58 0.14 35)", filter: "blur(60px)" }}
+        className="absolute -top-20 -right-20 w-80 h-80 rounded-full opacity-15"
+        style={{ background: "oklch(0.52 0.22 25)", filter: "blur(60px)" }}
       />
       <div
         aria-hidden="true"
-        className="absolute -bottom-16 -left-16 w-64 h-64 rounded-full opacity-10"
-        style={{ background: "oklch(0.62 0.09 152)", filter: "blur(50px)" }}
+        className="absolute -bottom-16 -left-16 w-64 h-64 rounded-full opacity-15"
+        style={{ background: "oklch(0.52 0.18 255)", filter: "blur(50px)" }}
       />
 
       <div className="max-w-4xl mx-auto relative z-10 text-center">
@@ -30,11 +30,11 @@ export default function Vision() {
           <Sparkles
             size={32}
             className="mx-auto mb-6"
-            style={{ color: "oklch(0.72 0.12 38)" }}
+            style={{ color: "oklch(0.72 0.18 255)" }}
           />
           <span
             className="inline-block text-xs font-semibold tracking-widest uppercase mb-6"
-            style={{ color: "oklch(0.72 0.12 38)" }}
+            style={{ color: "oklch(0.72 0.18 255)" }}
           >
             My Vision
           </span>
@@ -47,7 +47,7 @@ export default function Vision() {
           </h2>
           <p
             className="text-lg md:text-xl leading-relaxed max-w-2xl mx-auto"
-            style={{ color: "oklch(0.72 0.02 55)" }}
+            style={{ color: "oklch(0.78 0.03 255)" }}
           >
             I believe marketing is most powerful when it's human. My mission is
             to help brands and creators build authentic connections — not just

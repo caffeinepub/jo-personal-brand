@@ -1,4 +1,4 @@
-import { Link } from "@tanstack/react-router";
+import { Link, useNavigate } from "@tanstack/react-router";
 import { SiFacebook, SiLinkedin } from "react-icons/si";
 
 interface FooterProps {
@@ -17,9 +17,15 @@ const NAV_LINKS = [
 
 export default function Footer({ onLogoClick }: FooterProps) {
   const year = new Date().getFullYear();
+  const navigate = useNavigate();
   const hostname =
     typeof window !== "undefined" ? window.location.hostname : "";
   const caffeineUrl = `https://caffeine.ai?utm_source=caffeine-footer&utm_medium=referral&utm_content=${encodeURIComponent(hostname)}`;
+
+  const handleLogoClick = () => {
+    if (onLogoClick) onLogoClick();
+    navigate({ to: "/" });
+  };
 
   return (
     <footer className="bg-foreground text-background py-14 px-6 md:px-12">
@@ -29,9 +35,9 @@ export default function Footer({ onLogoClick }: FooterProps) {
           <div className="max-w-xs">
             <button
               type="button"
-              onClick={onLogoClick}
+              onClick={handleLogoClick}
               className="mb-3 cursor-pointer select-none hover:opacity-80 transition-opacity text-left"
-              aria-label="Job JS logo"
+              aria-label="Job JS logo - go to home"
             >
               <img
                 src="/assets/job_saji_digital_marketing_logo-019d4e9d-70c3-73b3-834e-5cb8490a3af0.png"
@@ -41,7 +47,7 @@ export default function Footer({ onLogoClick }: FooterProps) {
             </button>
             <p
               className="text-sm leading-relaxed"
-              style={{ color: "oklch(0.72 0.02 55)" }}
+              style={{ color: "oklch(0.72 0.02 255)" }}
             >
               Digital marketer from Kottayam, India. Building lifestyle brands
               with a digital mindset.
@@ -55,7 +61,7 @@ export default function Footer({ onLogoClick }: FooterProps) {
                 data-ocid="footer.link"
                 aria-label="LinkedIn"
                 className="w-9 h-9 rounded-lg flex items-center justify-center transition-colors"
-                style={{ background: "oklch(0.35 0.02 48)" }}
+                style={{ background: "oklch(0.35 0.03 255)" }}
               >
                 <SiLinkedin size={16} />
               </a>
@@ -66,7 +72,7 @@ export default function Footer({ onLogoClick }: FooterProps) {
                 data-ocid="footer.link"
                 aria-label="Facebook"
                 className="w-9 h-9 rounded-lg flex items-center justify-center transition-colors"
-                style={{ background: "oklch(0.35 0.02 48)" }}
+                style={{ background: "oklch(0.35 0.03 255)" }}
               >
                 <SiFacebook size={16} />
               </a>
@@ -77,7 +83,7 @@ export default function Footer({ onLogoClick }: FooterProps) {
           <div>
             <p
               className="text-xs font-semibold tracking-widest uppercase mb-4"
-              style={{ color: "oklch(0.72 0.02 55)" }}
+              style={{ color: "oklch(0.72 0.02 255)" }}
             >
               Navigation
             </p>
@@ -88,7 +94,7 @@ export default function Footer({ onLogoClick }: FooterProps) {
                     to={link.href}
                     data-ocid="footer.link"
                     className="text-sm transition-colors hover:opacity-100"
-                    style={{ color: "oklch(0.72 0.02 55)" }}
+                    style={{ color: "oklch(0.72 0.02 255)" }}
                   >
                     {link.label}
                   </Link>
@@ -101,8 +107,8 @@ export default function Footer({ onLogoClick }: FooterProps) {
         <div
           className="border-t pt-6 flex flex-col sm:flex-row justify-between items-center gap-3 text-xs"
           style={{
-            borderColor: "oklch(0.35 0.02 48)",
-            color: "oklch(0.58 0.02 55)",
+            borderColor: "oklch(0.35 0.03 255)",
+            color: "oklch(0.58 0.02 255)",
           }}
         >
           <p>© {year} Job JS. All rights reserved.</p>

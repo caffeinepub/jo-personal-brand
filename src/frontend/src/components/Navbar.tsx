@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { Link } from "@tanstack/react-router";
+import { Link, useNavigate } from "@tanstack/react-router";
 import { Menu, X } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
 import { useEffect, useState } from "react";
@@ -22,12 +22,18 @@ const NAV_LINKS = [
 export default function Navbar({ onLogoClick }: NavbarProps) {
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 40);
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
+
+  const handleLogoClick = () => {
+    onLogoClick(); // admin panel trick
+    navigate({ to: "/" }); // always go home
+  };
 
   return (
     <header
@@ -41,10 +47,10 @@ export default function Navbar({ onLogoClick }: NavbarProps) {
         {/* Logo */}
         <button
           type="button"
-          onClick={onLogoClick}
+          onClick={handleLogoClick}
           data-ocid="nav.link"
           className="select-none cursor-pointer hover:opacity-80 transition-opacity"
-          aria-label="Job JS logo"
+          aria-label="Job JS logo - go to home"
         >
           <img
             src="/assets/job_saji_digital_marketing_logo-019d4e9d-70c3-73b3-834e-5cb8490a3af0.png"

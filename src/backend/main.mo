@@ -22,7 +22,7 @@ actor {
     timestamp : Int;
   };
 
-  // Old type kept for upgrade compatibility
+  // V1 type kept for stable compatibility during migration
   type TestimonialV1 = {
     id : Nat;
     clientName : Text;
@@ -42,22 +42,19 @@ actor {
     createdAt : Int;
   };
 
-  // Stable vars - keep exact names/types from previous version to satisfy compatibility
   stable var nextPostId = 1;
   stable var nextLeadId = 1;
   stable var nextTestimonialId = 1;
-  stable var migratedTestimonials = false;
+  // Keep this stable var so the compiler doesn't complain about discarding it
+  stable var migratedTestimonials = true;
 
-  // Serialised snapshots of runtime maps (populated in preupgrade)
   stable var _postsSnap : [(Nat, Post)] = [];
   stable var _leadsSnap : [(Nat, Lead)] = [];
   stable var _testimonialsSnap : [(Nat, Testimonial)] = [];
 
-  // Runtime maps (not stable - rebuilt from snapshots in postupgrade)
   let posts = Map.empty<Nat, Post>();
   let leads = Map.empty<Nat, Lead>();
-  // This is the "old" non-stable map name kept so the compiler won't complain
-  // about M0170 on the Map type change. The actual data lives in testimonialsSnap.
+  // Keep V1 map stable variable name so compiler sees it as compatible
   let testimonials = Map.empty<Nat, TestimonialV1>();
   let testimonialsV2 = Map.empty<Nat, Testimonial>();
 
@@ -70,23 +67,7 @@ actor {
   system func postupgrade() {
     for ((k, v) in _postsSnap.vals()) posts.add(k, v);
     for ((k, v) in _leadsSnap.vals()) leads.add(k, v);
-    if (not migratedTestimonials) {
-      // Migrate old V1 entries (no photoUrl) to V2
-      for ((k, v) in testimonials.entries()) {
-        testimonialsV2.add(k, {
-          id = v.id;
-          clientName = v.clientName;
-          clientTitle = v.clientTitle;
-          photoUrl = "";
-          reviewText = v.reviewText;
-          rating = v.rating;
-          createdAt = v.createdAt;
-        });
-      };
-      migratedTestimonials := true;
-    } else {
-      for ((k, v) in _testimonialsSnap.vals()) testimonialsV2.add(k, v);
-    };
+    for ((k, v) in _testimonialsSnap.vals()) testimonialsV2.add(k, v);
     _postsSnap := [];
     _leadsSnap := [];
     _testimonialsSnap := [];
